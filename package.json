@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^0.19.1",
+    "element-theme": "^2.0.1",
+    "element-ui": "2.13.0",
+    "vue-ele-form": "^0.6.20"
+  }
+}
