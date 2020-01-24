@@ -90,9 +90,14 @@ export default class M99770Parser extends BaseParser {
 	async parseSeason(url) {
 		await this.getServers();
 		const res = await Utils.getUrl(url);
-		let ret = [];
+		let ret = { images: [], comicUrl: "" };
 		if (typeof res === "string") {
 			try {
+				let $ = cheerio.load(res);
+				ret.comicUrl = $(".cVHeader")
+					.children(".cH1")
+					.children("a")
+					.attr("href");
 				var m = res.match(/var sFiles(.*?);/)[0];
 				var sFiles = Utils.evalVariable(m, "sFiles");
 				m = res.match(/var sPath(.*?);/)[0];
@@ -105,7 +110,7 @@ export default class M99770Parser extends BaseParser {
 				} else {
 					let server = this.servers[sPath - 1];
 					imgs.map((img, idx) => {
-						ret.push(server + img);
+						ret.images.push(server + img);
 					});
 				}
 			} catch (err) {

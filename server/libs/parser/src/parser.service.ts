@@ -12,56 +12,85 @@ export class ParserService {
 		@InjectModel(Season) private readonly seaonModel: ModelType<Season>
 	) {}
 
-	/**解析漫画页 返回漫画地址等信息 */
+	/**解析漫画页 返回漫画地址等信息 TODO: 添加更新判断,已经解析过的,还没到漫画章节更新时不需要再解析 */
 	async parseComic(id) {
-		let comic: Comic;
-		console.log(id);
 		//正常id类型（数据库已经有数据模型）
 		if (id.indexOf("/") < 0) {
-			comic = await this.comicModel.findById(String(id));
-			if (!comic) return { msg: "漫画不存在" };
-			const { seasons } = await new M99770Parser().parseComic(comic.srcUrl);
-			try {
-				for (let i = 0; i < seasons.length; i++) {
-					//数据模型指定
-					const season = (await this.convertSeasonToModel(comic, seasons[i])) as DocumentType<Season>;
-					comic.seasons[i] = season;
-				}
-				await (comic as DocumentType<Comic>).save();
-			} catch (err) {
-				Logger.error(err.toString(), "", "解析出错");
-			}
+			return await this.parseComicById(id);
 		} else {
 			//网址类型（数据库可能没有数据模型）
-			comic = await new M99770Parser().parseComic(id);
-			const seasons = comic.seasons as any[]; //备份集信息
-			comic.seasons = []; //清空集信息
-			comic = await this.convertComicToModel(comic);
-			try {
+			return await this.parseComicByUrl(id);
+		}
+	}
+	/**根据id解析漫画页 */
+	async parseComicById(id: string) {
+		const comic = await this.comicModel.findById(String(id));
+		if (!comic) return { msg: "漫画不存在" };
+		// await comic.populate("seasons").execPopulate();
+		// return comic;
+		const { seasons } = await new M99770Parser().parseComic(comic.srcUrl);
+		// console.log(seasons);
+		try {
+			if (seasons.length > 0) {
+				comic.seasons = [];
 				for (let i = 0; i < seasons.length; i++) {
 					//数据模型指定
 					const season = (await this.convertSeasonToModel(comic, seasons[i])) as DocumentType<Season>;
-					comic.seasons[i] = season;
+					comic.seasons.push(season.id); //直接用season会循环引用
 				}
-				await (comic as DocumentType<Comic>).save();
-			} catch (err) {
-				Logger.error(err.toString(), "", "解析出错");
+				// console.log(comic);
+				// await (comic as DocumentType<Comic>).save();
 			}
+		} catch (err) {
+			Logger.error(err.toString(), "", "解析出错");
 		}
-
 		return comic;
 	}
+	/**根据url解析漫画页 */
+	async parseComicByUrl(url: string) {
+		//网址类型（数据库可能没有数据模型）
+		let comic = await new M99770Parser().parseComic(url);
+		const seasons = comic.seasons as any[]; //备份集信息
+		comic.seasons = []; //清空集信息
+		comic = await this.convertComicToModel(comic);
+		try {
+			if (seasons.length > 0) {
+				comic.seasons = [];
+				for (let i = 0; i < seasons.length; i++) {
+					//数据模型指定
+					const season = (await this.convertSeasonToModel(comic, seasons[i])) as DocumentType<Season>;
+					comic.seasons.push(season.id); //直接用season会循环引用
+				}
+				// console.log(comic);
+				// await (comic as DocumentType<Comic>).save();
+			}
+		} catch (err) {
+			Logger.error(err.toString(), "", "解析出错");
+		}
+		return comic;
+	}
+
 	/**解析漫画的一集的所有图片 */
 	async parseSeason(id) {
+		//正常id类型（数据库已经有数据模型）
+		if (id.indexOf("/") < 0) {
+			return await this.parseSeasonById(id);
+		} else {
+			//网址类型（数据库可能没有数据模型）
+			return await this.parseSeasonByUrl(id);
+		}
+	}
+	/**根据id解析一集图片页 */
+	async parseSeasonById(id: string) {
 		try {
 			const model = await this.seaonModel.findById(String(id));
 			if (!model) return { msg: "当前集不存在" };
 			if (model.images.length <= 0) {
 				//还没解析过
-				const imgs = await new M99770Parser().parseSeason(model.srcUrl);
-				if (imgs.length > 0) {
+				const { images } = await new M99770Parser().parseSeason(model.srcUrl);
+				if (images.length > 0) {
 					//保存地址
-					imgs.map(img => {
+					images.map(img => {
 						return model.images.push(img);
 					});
 					await model.save();
@@ -72,6 +101,32 @@ export class ParserService {
 			Logger.error(err.toString(), "", "解析一集出错");
 			return { msg: "解析出错" };
 		}
+	}
+	/**根据url解析一集图片页 */
+	async parseSeasonByUrl(url: string) {
+		let model = await this.seaonModel.findOne({ srcUrl: url });
+		//存在当前集并且已经解析过
+		if (model && model.images.length > 0) {
+			await model.populate("comic").execPopulate();
+			return model;
+		}
+		const { images, comicUrl } = await new M99770Parser().parseSeason(url);
+
+		//不存在当前集 解析
+		if (!model && comicUrl) await this.parseComicByUrl(comicUrl);
+
+		//再查找一次当前集
+		model = await this.seaonModel.findOne({ srcUrl: url });
+		if (!model) return { msg: "漫画信息不存在" };
+		if (model.images.length <= 0) {
+			//保存地址
+			images.map(img => {
+				return model.images.push(img);
+			});
+			await model.save();
+		}
+
+		return model;
 	}
 
 	/**搜索漫画 */
