@@ -4,7 +4,9 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+		logger: ["log", "error", "warn", "debug", "verbose"]
+	});
 	app.enableCors();
 	app.useStaticAssets("uploads", {
 		prefix: "/uploads"

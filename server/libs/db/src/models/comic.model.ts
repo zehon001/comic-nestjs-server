@@ -1,11 +1,17 @@
-import { prop } from "@typegoose/typegoose";
+import { prop, arrayProp, Ref } from "@typegoose/typegoose";
 import { ApiProperty } from "@nestjs/swagger";
 import { BaseModel } from "./base.model";
+import { Season } from "./season.model";
 
+/**漫画信息 */
 export class Comic extends BaseModel {
 	@prop()
 	@ApiProperty({ description: "漫画名称", example: "name" })
 	name: string;
+
+	@prop({ unique: true })
+	@ApiProperty({ description: "漫画源地址", example: "http://www.baidu.com" })
+	srcUrl: string;
 
 	@prop()
 	@ApiProperty({ description: "作者", example: "http://www.baidu.com" })
@@ -22,4 +28,8 @@ export class Comic extends BaseModel {
 	@prop()
 	@ApiProperty({ description: "封面地址", example: "http://www.baidu.com" })
 	cover: string;
+
+	@arrayProp({ itemsRef: "Season" })
+	@ApiProperty({ description: "所有集" })
+	seasons: Ref<Season>[];
 }

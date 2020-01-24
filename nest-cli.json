@@ -1,8 +1,6 @@
 {
-  "projects": {
-    
-  },
-  "compilerOptions": {
-    "webpack": true
-  }
+	"projects": {},
+	"compilerOptions": {
+		"webpack": true
+	}
 }

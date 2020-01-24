@@ -1,11 +1,4 @@
-import {
-	Controller,
-	Get,
-	Post,
-	UseInterceptors,
-	Req,
-	UploadedFile
-} from "@nestjs/common";
+import { Controller, Get, Post, UseInterceptors, Req, UploadedFile } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 
@@ -34,7 +27,8 @@ export class AppController {
 					title: "漫画管理",
 					items: [
 						{ title: "首页", path: "/" },
-						{ title: "漫画列表", path: "/comics/list" }
+						{ title: "漫画列表", path: "/comics/list" },
+						{ title: "集列表", path: "/seasons/list" }
 					]
 				},
 				{

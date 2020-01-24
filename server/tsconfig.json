@@ -16,6 +16,14 @@
       ],
       "@lib/db/*": [
         "libs/db/src/*"
+      ],
+      "@app/parser": [
+        "libs/@lib/parser/src",
+        "libs/parser/src"
+      ],
+      "@app/parser/*": [
+        "libs/@lib/parser/src/*",
+        "libs/parser/src/*"
       ]
     }
   },

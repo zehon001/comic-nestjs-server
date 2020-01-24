@@ -5,6 +5,8 @@ import { DbModule } from "@lib/db";
 import { UsersModule } from "./users/users.module";
 import { ComicsModule } from "./comics/comics.module";
 import { MulterModule } from "@nestjs/platform-express";
+import { CrawlerModule } from './crawler/crawler.module';
+import { SeasonsModule } from './seasons/seasons.module';
 
 @Module({
 	imports: [
@@ -13,7 +15,9 @@ import { MulterModule } from "@nestjs/platform-express";
 		}),
 		DbModule,
 		UsersModule,
-		ComicsModule
+		ComicsModule,
+		CrawlerModule,
+		SeasonsModule
 	],
 	controllers: [AppController],
 	providers: [AppService]

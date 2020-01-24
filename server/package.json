@@ -25,15 +25,23 @@
     "@nestjs/platform-express": "^6.7.2",
     "@nestjs/swagger": "^4.1.14",
     "@typegoose/typegoose": "^6.2.1",
+    "@types/cheerio": "^0.22.15",
+    "@types/md5": "^2.1.33",
     "@types/mongoose": "^5.5.41",
+    "@types/node-fetch": "^2.5.4",
+    "@types/underscore": "^1.9.4",
     "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.3",
+    "md5": "^2.2.1",
     "mongoose": "^5.8.9",
     "nestjs-mongoose-crud": "^1.2.2",
     "nestjs-typegoose": "^7.0.0",
+    "node-fetch": "^2.6.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
-    "swagger-ui-express": "^4.1.3"
+    "swagger-ui-express": "^4.1.3",
+    "underscore": "^1.9.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.9.0",
@@ -73,7 +81,9 @@
     ],
     "moduleNameMapper": {
       "@lib/db/(.*)": "<rootDir>/libs/db/src/$1",
-      "@lib/db": "<rootDir>/libs/db/src"
+      "@lib/db": "<rootDir>/libs/db/src",
+      "@app/parser/(.*)": "<rootDir>/libs/parser/src/$1",
+      "@app/parser": "<rootDir>/libs/parser/src"
     }
   }
 }
