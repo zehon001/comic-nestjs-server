@@ -1,8 +1,10 @@
 import BaseParser from "./base.parser";
 import * as cheerio from "cheerio";
 import Utils from "utils/utils";
+import { ParseComicRet, ParseSeasonRet } from "../parser.result";
 // global.tempEvalM99770 = {};
 
+//TODO 失败处理
 export default class M99770Parser extends BaseParser {
 	private servers: [];
 	constructor() {
@@ -11,18 +13,15 @@ export default class M99770Parser extends BaseParser {
 	}
 
 	/**解析漫画信息（包括集信息） */
-	async parseComic(url) {
+	async parseComic(url): Promise<ParseComicRet> {
 		const res = await Utils.getUrl(url);
-		let ret = {
-			cover: "",
-			name: "",
-			tag: "",
-			author: "",
-			srcUrl: url,
-			lastUpdateAt: "",
-			seasons: [] //必须要有 防止为空
-		};
-		if (typeof res !== "string") return ret;
+
+		let ret = new ParseComicRet();
+
+		if (typeof res !== "string") {
+			ret.error();
+			return ret;
+		}
 
 		let $ = cheerio.load(res);
 
@@ -67,30 +66,31 @@ export default class M99770Parser extends BaseParser {
 
 		$("div#subBookListAct div a").each((idx, element) => {
 			const $element = $(element);
-			ret.seasons.push({
-				name: $element.text(),
-				srcUrl: $element.attr("href"),
-				sidx: idx,
-				type: "normal"
-			});
+			let season = new ParseSeasonRet();
+			season.name = $element.text();
+			season.srcUrl = $element.attr("href");
+			season.sidx = idx;
+			season.type = "normal";
+			ret.seasons.push(season);
 		});
 		$("div#subBookListPs div a").each((idx, element) => {
 			const $element = $(element);
-			ret.seasons.push({
-				title: $element.text(),
-				srcUrl: $element.attr("href"),
-				sidx: idx,
-				type: "other"
-			});
+			let season = new ParseSeasonRet();
+			season.name = $element.text();
+			season.srcUrl = $element.attr("href");
+			season.sidx = idx;
+			season.type = "other";
+			ret.seasons.push(season);
 		});
 
 		return ret;
 	}
 
-	async parseSeason(url) {
+	async parseSeason(url): Promise<ParseSeasonRet> {
 		await this.getServers();
 		const res = await Utils.getUrl(url);
-		let ret = { images: [], comicUrl: "" };
+		// let ret = { images: [], comicUrl: "", err: false };
+		let ret = new ParseSeasonRet();
 		if (typeof res === "string") {
 			try {
 				let $ = cheerio.load(res);
@@ -115,13 +115,16 @@ export default class M99770Parser extends BaseParser {
 				}
 			} catch (err) {
 				console.log(`99770解析页地址的通道失败 url=${url}`);
+				ret.error();
 			}
+		} else {
+			ret.error();
 		}
 		return ret;
 	}
 
 	/**搜索漫画 */
-	async search(content: string) {
+	async search(content: string): Promise<ParseComicRet[]> {
 		let url = "http://99770.hhxxee.com/search/s.aspx";
 		let body = "tbSTxt=" + content;
 		var _$this = this;
@@ -134,21 +137,13 @@ export default class M99770Parser extends BaseParser {
 			},
 			body
 		);
-		let ret = [];
+		let ret: ParseComicRet[] = [];
 		if (typeof res !== "string") return ret;
 
 		let $ = cheerio.load(res);
 
 		let cPubBody = $(".cPubBody .cDataList .cInfoItem").each((idx, element) => {
-			let result = {
-				cover: "",
-				name: "",
-				tag: "",
-				author: "",
-				srcUrl: "",
-				lastUpdateAt: "",
-				seasons: [] //必须要有 防止为空
-			};
+			let result = new ParseComicRet();
 			let $element = $(element);
 			$element.children(".cListSlt").each((i, c) => {
 				result.cover = $(c)

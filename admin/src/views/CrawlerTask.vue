@@ -20,6 +20,18 @@
 				>删除选中</el-button
 			>
 		</template>
+
+		<template slot-scope="data" slot="idForm">
+			<el-tag>{{ data.value }}</el-tag>
+		</template>
+		<template slot-scope="data" slot="menu">
+			<el-button
+				type="success"
+				size="small"
+				icon="el-icon-refresh-right"
+				@click="retryTask(data.row, data.index)"
+			></el-button>
+		</template>
 	</avue-crud>
 </template>
 
@@ -27,10 +39,13 @@
 import { Vue, Component, Prop } from "vue-property-decorator";
 
 @Component({})
-export default class ResourcesCrud extends Vue {
-	@Prop(String) resource!: string;
+export default class CrawlerTask extends Vue {
+	resource: string = "crawlertask";
 	/**表格数据*/
-	data = [];
+	data = {
+		total: 0,
+		data: []
+	};
 
 	/**表格配置(服务器拉取)*/
 	option: any = {};
@@ -47,33 +62,57 @@ export default class ResourcesCrud extends Vue {
 
 	/**刷新数据 */
 	async fetch() {
+		// this.query.start = (this.query.page - 1) * this.query.limit;
+		// this.query.end = this.query.page + this.query.limit;
 		const res = await this.$http.get(this.resource, {
-			params: {
-				query: this.query
-			}
+			params: this.query
 		});
+		console.log(res.data.data);
 		this.data = res.data.data;
+		(this.data.data as any[]) = this.data.data.map((d: any) => {
+			d.parseUrl = d.data.parseUrl;
+			d.name = d.data.name;
+			d.progress = d.progress + "%";
+			d.processedOn = d.processedOn
+				? new Date(d.processedOn || 0).toLocaleString()
+				: "-";
+			d.finishedOn = d.finishedOn
+				? new Date(d.finishedOn || 0).toLocaleString()
+				: "-";
+			return d;
+		});
+
 		// console.log(this.data);
-		this.page.total = res.data.data.total;
+
+		this.page.total = this.data.total;
 	}
 	/**拉取配置信息 */
 	async fetchOption() {
 		const res = await this.$http.get(`${this.resource}/option`);
 		this.option = res.data.data;
+		console.log(this.option);
 	}
 
 	/**新建一条数据 */
 	async create(row, done, loading) {
-		await this.$http.post(this.resource, row);
+		console.log(row);
+		await this.$http.post(this.resource, {
+			parseUrl: row.parseUrl,
+			name: row.name
+		});
 		this.$message.success("新建成功");
 		this.fetch();
 		done();
 	}
 	/**更新一条数据 */
 	async update(row, index, done, loading) {
-		const data = JSON.parse(JSON.stringify(row));
-		delete data.$index;
-		await this.$http.put(`${this.resource}/${data._id}`, data);
+		// const data = JSON.parse(JSON.stringify(row));
+		// delete data.$index;
+		console.log(row);
+		await this.$http.put(`${this.resource}/${row.id}`, {
+			parseUrl: row.parseUrl,
+			name: row.name
+		});
 		this.$message.success("编辑成功");
 		this.fetch();
 		done();
@@ -85,7 +124,7 @@ export default class ResourcesCrud extends Vue {
 		} catch (err) {
 			return;
 		}
-		await this.$http.delete(`${this.resource}/${row._id}`);
+		await this.$http.delete(`${this.resource}/${row.id}`);
 		this.$message.success("删除成功");
 		this.fetch();
 	}
@@ -104,15 +143,12 @@ export default class ResourcesCrud extends Vue {
 			text: "正在删除"
 		});
 		for (let i = 0; i < crud.tableSelect.length; i++) {
-			const _id = crud.tableSelect[i]._id;
-			await this.$http.delete(`${this.resource}/${_id}`);
+			const id = crud.tableSelect[i].id;
+			await this.$http.delete(`${this.resource}/${id}`);
 		}
 		loading.close();
 		this.$message.success("删除成功");
 		this.fetch();
-		// await this.$http.delete(`${this.resource}/${row._id}`);
-		// this.$message.success("删除成功");
-		// this.fetch();
 	}
 
 	/**搜索改变 */
@@ -124,6 +160,17 @@ export default class ResourcesCrud extends Vue {
 		this.query.where = where;
 		this.fetch();
 		done();
+	}
+	/**重试任务 */
+	async retryTask(row, index) {
+		try {
+			await this.$confirm("是否重试?");
+		} catch (err) {
+			return;
+		}
+		await this.$http.get(`${this.resource}/retry/${row.id}`);
+		// this.$message.success("删除成功");
+		this.fetch();
 	}
 
 	/**排序改变 */
@@ -148,7 +195,7 @@ export default class ResourcesCrud extends Vue {
 	created() {
 		this.query.limit = this.page.pageSize;
 		this.fetchOption();
-		this.fetch();
+		// this.fetch();
 	}
 }
 </script>

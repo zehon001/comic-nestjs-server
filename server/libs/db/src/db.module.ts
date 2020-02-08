@@ -1,11 +1,11 @@
 import { Module, Global } from "@nestjs/common";
 import { DbService } from "./db.service";
 import { TypegooseModule } from "nestjs-typegoose";
-import { User } from "./models/user.model";
+import { AdminUser } from "./models/adminuser.model";
 import { Comic } from "./models/comic.model";
 import { Season } from "./models/season.model";
 
-const models = TypegooseModule.forFeature([User, Comic, Season]);
+const models = TypegooseModule.forFeature([AdminUser, Comic, Season]);
 
 @Global()
 @Module({

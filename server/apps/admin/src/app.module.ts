@@ -5,19 +5,22 @@ import { DbModule } from "@lib/db";
 import { UsersModule } from "./users/users.module";
 import { ComicsModule } from "./comics/comics.module";
 import { MulterModule } from "@nestjs/platform-express";
-import { CrawlerModule } from './crawler/crawler.module';
-import { SeasonsModule } from './seasons/seasons.module';
+import { CrawlerModule } from "./crawler/crawler.module";
+import { SeasonsModule } from "./seasons/seasons.module";
+import { CrawlertaskModule } from "./crawlertask/crawlertask.module";
 
 @Module({
 	imports: [
 		MulterModule.register({
 			dest: "uploads"
 		}),
+
 		DbModule,
 		UsersModule,
 		ComicsModule,
 		CrawlerModule,
-		SeasonsModule
+		SeasonsModule,
+		CrawlertaskModule
 	],
 	controllers: [AppController],
 	providers: [AppService]

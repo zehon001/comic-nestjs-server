@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
 import Main from "../views/Main.vue";
 import ResourceCrud from "../views/ResourceCrud.vue";
+import CrawlerTask from "../views/CrawlerTask.vue";
 
 Vue.use(VueRouter);
 
@@ -13,9 +14,8 @@ const routes: RouteConfig[] = [
 		children: [
 			{ name: "home", path: "/", component: Home },
 			{
-				path: "/:resource/list",
-				component: ResourceCrud,
-				props: true
+				path: "/crawlertask/list",
+				component: CrawlerTask
 			},
 			{
 				path: "/:resource/list",

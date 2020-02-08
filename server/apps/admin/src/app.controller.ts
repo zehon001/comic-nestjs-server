@@ -1,6 +1,7 @@
 import { Controller, Get, Post, UseInterceptors, Req, UploadedFile } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { FileInterceptor } from "@nestjs/platform-express";
+import AppDF from "./app.define";
 
 @Controller()
 export class AppController {
@@ -21,21 +22,6 @@ export class AppController {
 
 	@Get("option")
 	option() {
-		return {
-			items: [
-				{
-					title: "漫画管理",
-					items: [
-						{ title: "首页", path: "/" },
-						{ title: "漫画列表", path: "/comics/list" },
-						{ title: "集列表", path: "/seasons/list" }
-					]
-				},
-				{
-					title: "用户管理",
-					items: [{ title: "用户列表", path: "/users/list" }]
-				}
-			]
-		};
+		return AppDF.WebOption.index;
 	}
 }

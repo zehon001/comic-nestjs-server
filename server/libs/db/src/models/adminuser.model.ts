@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { BaseModel } from "./base.model";
 import { hashSync } from "bcryptjs";
 
-export class User extends BaseModel {
+export class AdminUser extends BaseModel {
 	@prop()
 	@ApiProperty({ description: "用户名", example: "user" })
 	username: string;

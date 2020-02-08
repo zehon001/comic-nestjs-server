@@ -31,6 +31,10 @@ export class Comic extends BaseModel {
 	@ApiProperty({ description: "封面地址", example: "http://www.baidu.com" })
 	cover: string;
 
+	@prop()
+	@ApiProperty({ description: "最后解析时间" })
+	lastParseAt: Date;
+
 	//TODO:定义成虚拟字段 联合查询
 	@arrayProp({ ref: "Season", localField: "_id", foreignField: "comic" })
 	@ApiProperty({ description: "所有集" })

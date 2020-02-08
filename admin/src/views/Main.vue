@@ -44,7 +44,7 @@ export default class Main extends Vue {
 	/**拉取配置信息 */
 	async fetchOption() {
 		const res = await this.$http.get(`option`);
-		this.menu = res.data;
+		this.menu = res.data.data;
 	}
 	created() {
 		this.fetchOption();

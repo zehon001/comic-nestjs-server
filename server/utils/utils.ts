@@ -1,4 +1,6 @@
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
+import Axios from "axios";
+
 import CacheManager from "./CacheManager";
 import { Logger } from "@nestjs/common";
 // const transation = require("./transation").transation;
@@ -11,7 +13,7 @@ export default class Utils {
 		return new Promise(async function(resolve, reject) {
 			if (typeof url == "string") url = { url, encoding: null };
 			body = body || {};
-			if (!url.type) url.type = "text";
+			// if (!url.type) url.type = "text";
 			let headers = {};
 			if (url.encoding) headers["Content-Type"] = "text/html; charset=" + url.encoding;
 			if (url.headers) {
@@ -21,34 +23,39 @@ export default class Utils {
 			}
 
 			const c = await _this.cache.get("POST" + url.url + body);
-			if (c) resolve(c);
-
-			fetch(url.url, {
-				method: "POST",
-				headers: headers,
-				body: body
-			})
-				.then(response => {
-					if (!response.ok) {
-						resolve({
-							code: response.status,
-							msg: response.statusText
-						});
-					} else {
-						if (response[url.type]) return response[url.type]();
-						else return response.text();
-					}
+			if (c) {
+				resolve(c);
+			} else {
+				Axios.get(url.url, {
+					method: "POST",
+					headers: headers,
+					timeout: 10000, //超时10秒
+					data: body
 				})
-				.then(msg => {
-					if (msg) {
-						_this.cache.set("POST" + url.url + body, msg);
-						resolve(msg);
-					}
-				})
-				.catch(error => {
-					Logger.error(error.toString());
-					resolve();
-				});
+					.then(response => {
+						if (Math.floor(response.status / 100) != 2) {
+							resolve({
+								code: response.status,
+								msg: response.statusText
+							});
+						} else {
+							// if (response[url.type]) return response[url.type]();
+							// else return response.data;
+							console.log(response.data);
+							return response.data;
+						}
+					})
+					.then(msg => {
+						if (msg) {
+							_this.cache.set("POST" + url.url + body, msg);
+							resolve(msg);
+						}
+					})
+					.catch(error => {
+						Logger.error(error.toString());
+						resolve();
+					});
+			}
 		});
 	}
 
@@ -62,19 +69,22 @@ export default class Utils {
 			const c = await _this.cache.get("GET" + url.url);
 			if (c) resolve(c);
 			else {
-				fetch(url.url, {
+				Axios.get(url.url, {
 					method: "GET",
-					headers: headers
+					headers: headers,
+					timeout: 10000 //10秒超时
 				})
 					.then(response => {
-						if (!response.ok) {
+						if (Math.floor(response.status / 100) != 2) {
+							// if (!response.ok) {
 							resolve({
 								code: response.status,
 								msg: response.statusText
 							});
 						} else {
-							if (response[url.type]) return response[url.type]();
-							else return response.text();
+							// if (response[url.type]) return response[url.type]();
+							// else return response.text();
+							return response.data;
 						}
 					})
 					.then(msg => {

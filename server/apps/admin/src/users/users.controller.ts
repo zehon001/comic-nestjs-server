@@ -1,38 +1,20 @@
 import { Controller, Get } from "@nestjs/common";
 import { InjectModel } from "nestjs-typegoose";
-import { User } from "@lib/db/models/user.model";
-import { ReturnModelType } from "@typegoose/typegoose";
+import { AdminUser } from "@lib/db/models/adminuser.model";
 import { Crud } from "nestjs-mongoose-crud";
 import { ApiTags } from "@nestjs/swagger";
+import AppDF from "../app.define";
 
 @Crud({
-	model: User
+	model: AdminUser
 })
 @Controller("users")
-@ApiTags("用户")
+@ApiTags("用户列表")
 export class UsersController {
-	constructor(@InjectModel(User) private readonly model) {}
+	constructor(@InjectModel(AdminUser) private readonly model) {}
 
 	@Get("option")
 	option() {
-		return {
-			title: "用户列表",
-			searchMenuSpan: 8, //搜索框占位
-			menuType: "icon",
-			selection: true,
-			column: [
-				{
-					label: "用户名",
-					prop: "username",
-					search: true,
-					sortable: true,
-					regex: true
-				},
-				{
-					label: "密码",
-					prop: "password"
-				}
-			]
-		};
+		return AppDF.WebOption.users_list;
 	}
 }

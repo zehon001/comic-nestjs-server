@@ -2,11 +2,16 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { NestExpressApplication } from "@nestjs/platform-express";
+import AppDF from "./app.define";
+import { StatusInterceptor } from "filters/status.interceptor";
+import { StatusFilter } from "filters/status.filter";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 		logger: ["log", "error", "warn", "debug", "verbose"]
 	});
+	app.useGlobalFilters(new StatusFilter());
+	app.useGlobalInterceptors(new StatusInterceptor());
 	app.enableCors();
 	app.useStaticAssets("uploads", {
 		prefix: "/uploads"
@@ -19,7 +24,7 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, options);
 	SwaggerModule.setup("api-docs", app, document);
 
-	await app.listen(3008);
-	console.log("http://localhost:3008");
+	await app.listen(AppDF.ADMIN_PORT);
+	console.log("http://localhost:" + AppDF.ADMIN_PORT);
 }
 bootstrap();
