@@ -35,7 +35,8 @@ export class Comic extends BaseModel {
 	@ApiProperty({ description: "最后解析时间" })
 	lastParseAt: Date;
 
-	//TODO:定义成虚拟字段 联合查询
+	// @arrayProp({ itemsRef: "Season" })
+	//使用虚拟字段
 	@arrayProp({ ref: "Season", localField: "_id", foreignField: "comic" })
 	@ApiProperty({ description: "所有集" })
 	// @isWithVirtualPOP({})

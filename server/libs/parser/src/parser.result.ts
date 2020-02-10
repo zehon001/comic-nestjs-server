@@ -1,5 +1,6 @@
 import { Comic } from "@lib/db/models/comic.model";
 import { Season } from "@lib/db/models/season.model";
+import { DocumentType } from "@typegoose/typegoose";
 
 /**基础返回结构 */
 export class ParseRet {
@@ -51,11 +52,11 @@ export class ParseComicRet extends ParseRet {
 /**解析服务的漫画返回结构 */
 export class ParseComicSVCRet extends ParseRet {
 	/**漫画模型 */
-	public comic: Comic;
+	public comic: DocumentType<Comic>;
 }
 
 /**解析服务的集返回结构 */
 export class ParseSeasonSVCRet extends ParseRet {
 	/**集模型 */
-	public season: Season;
+	public season: DocumentType<Season>;
 }

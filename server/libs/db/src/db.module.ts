@@ -14,7 +14,7 @@ const models = TypegooseModule.forFeature([AdminUser, Comic, Season]);
 			useCreateIndex: true,
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
-			useFindAndModify: false
+			useFindAndModify: true
 		}),
 		models
 	],

@@ -19,10 +19,7 @@ export class CrawlerController {
 	@Post("search")
 	@ApiOperation({ summary: "搜索漫画" })
 	async search(@Body() searchDto: CrawlerSearchDto) {
-		return (await this.parserService.search(searchDto.content, searchDto.useParser)).map(d => {
-			if (d.seasons) d.seasons = undefined;
-			return d;
-		});
+		return await this.parserService.search(searchDto.content, searchDto.useParser);
 	}
 
 	@Get("parsecomic")

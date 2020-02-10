@@ -64,22 +64,38 @@ export default class M99770Parser extends BaseParser {
 			.attr("src");
 		// console.log(ret.cover);
 
-		$("div#subBookListAct div a").each((idx, element) => {
+		//索引从 1 开始
+		//分集
+		let $seasons = $("div#subBookListAct div a");
+		$seasons.each((idx, element) => {
 			const $element = $(element);
 			let season = new ParseSeasonRet();
 			season.name = $element.text();
 			season.srcUrl = $element.attr("href");
-			season.sidx = idx;
+			season.sidx = $seasons.length - idx;
 			season.type = "normal";
 			ret.seasons.push(season);
 		});
-		$("div#subBookListPs div a").each((idx, element) => {
+		//番外
+		$seasons = $("div#subBookListPs div a");
+		$seasons.each((idx, element) => {
 			const $element = $(element);
 			let season = new ParseSeasonRet();
 			season.name = $element.text();
 			season.srcUrl = $element.attr("href");
-			season.sidx = idx;
+			season.sidx = $seasons.length - idx;
 			season.type = "other";
+			ret.seasons.push(season);
+		});
+		//单行本
+		$seasons = $("div#subBookListVol div a");
+		$seasons.each((idx, element) => {
+			const $element = $(element);
+			let season = new ParseSeasonRet();
+			season.name = $element.text();
+			season.srcUrl = $element.attr("href");
+			season.sidx = $seasons.length - idx;
+			season.type = "book"; //册
 			ret.seasons.push(season);
 		});
 

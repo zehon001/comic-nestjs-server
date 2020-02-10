@@ -34,13 +34,16 @@ export class ParserService {
 		}
 
 		ret.comic = comic;
+		// console.log(comic.seasons);//现在是虚拟字段
 
 		//还未超过最大缓存时间（因为漫画会更新，不能永久缓存解析结果）
-		if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() > 24 * 3600) {
+		if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() < 24 * 3600000) {
 			await comic.populate("seasons").execPopulate();
+			// console.log("读取漫画缓存");
 			return ret;
 		}
 
+		// console.log("重新解析漫画");
 		//否则重新解析
 		const { seasons } = await new M99770Parser().parseComic(comic.srcUrl);
 		// console.log(seasons);
@@ -52,11 +55,10 @@ export class ParserService {
 					const md_season = (await this.convertSeasonToModel(comic, seasons[i] as any)) as DocumentType<
 						Season
 					>;
-					comic.seasons.push(md_season.id); //直接用season会循环引用
+					comic.seasons.push(md_season);
 				}
 				comic.lastParseAt = new Date();
 				await comic.save();
-
 				// console.log(comic);
 				// await (comic as DocumentType<Comic>).save();
 			}
@@ -70,12 +72,11 @@ export class ParserService {
 	async parseComicByUrl(url: string): Promise<ParseComicSVCRet> {
 		//网址类型（数据库可能没有数据模型）
 		let comic: any = await new M99770Parser().parseComic(url);
-		// comic.lastParseAt=undefined;
 		let ret = new ParseComicSVCRet();
 
 		if (comic.err) {
 			ret.error();
-			ret.comic = comic as Comic;
+			// ret.comic = comic;
 			return ret;
 		}
 
@@ -89,7 +90,7 @@ export class ParserService {
 				for (let i = 0; i < seasons.length; i++) {
 					//数据模型指定
 					const md_season = (await this.convertSeasonToModel(md_comic, seasons[i])) as DocumentType<Season>;
-					md_comic.seasons.push(md_season.id); //直接用season会循环引用
+					md_comic.seasons.push(md_season);
 				}
 				comic.lastParseAt = new Date();
 				await comic.save();
@@ -182,13 +183,18 @@ export class ParserService {
 	}
 
 	/**转换漫画到数据模型（解析结果更新到数据库） */
-	async convertComicToModel(comic: DocumentType<Comic> | ParseComicRet): Promise<DocumentType<Comic>> {
+	async convertComicToModel(
+		comic: DocumentType<Comic> | ParseComicRet,
+		update?: boolean
+	): Promise<DocumentType<Comic>> {
 		if (comic instanceof ParseComicRet) {
 			const lastUpdateAt = comic.lastUpdateAt;
-			let model = await this.comicModel.findOne({ srcUrl: comic.srcUrl });
+			let model = update
+				? await this.comicModel.findOneAndUpdate({ srcUrl: comic.srcUrl }, comic)
+				: await this.comicModel.findOne({ srcUrl: comic.srcUrl });
+
 			if (!model) {
 				try {
-					// comic.lastParseAt = new Date();
 					model = await this.comicModel.create(comic); //防止高并发同时创建模型导致唯一索引报错
 				} catch (err) {
 					model = await this.comicModel.findOne({ srcUrl: comic.srcUrl });
@@ -216,17 +222,20 @@ export class ParserService {
 	/**转换集到数据模型（解析结果更新到数据库） */
 	async convertSeasonToModel(
 		comic: DocumentType<Comic>,
-		season: DocumentType<Season> | ParseSeasonRet
+		season: DocumentType<Season> | ParseSeasonRet,
+		update?: boolean
 	): Promise<DocumentType<Season>> {
 		if (season instanceof ParseSeasonRet) {
 			if (!comic) throw new StatusException("漫画集转换失败", 202);
 			else {
-				let model = await this.seaonModel.findOne({ srcUrl: season.srcUrl });
+				let model = update
+					? await this.seaonModel.findOneAndUpdate({ srcUrl: season.srcUrl }, season)
+					: await this.seaonModel.findOne({ srcUrl: season.srcUrl });
 				if (!model) {
 					try {
 						if (!season.images) season.images = [];
 						model = await this.seaonModel.create(season); //防止高并发同时创建模型导致唯一索引报错
-						model.comic = comic; //关联漫画
+						model.comic = comic.id; //关联漫画
 						await model.save();
 					} catch (err) {
 						Logger.error(err, "", "创建集失败");

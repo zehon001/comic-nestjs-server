@@ -41,7 +41,7 @@ export default class Utils {
 						} else {
 							// if (response[url.type]) return response[url.type]();
 							// else return response.data;
-							console.log(response.data);
+							// console.log(response.data);
 							return response.data;
 						}
 					})
