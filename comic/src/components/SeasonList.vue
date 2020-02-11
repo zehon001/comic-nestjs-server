@@ -9,22 +9,29 @@
 			<div class="title font-weight-bold">{{title}}</div>
 		</v-col>
 		<v-col class="px-0">
-			<v-card>
-				<v-container>
-					<v-btn
-						v-for="item in data"
-						:key="item._id"
-						:to="`/season?id=${item._id}`"
-						block
-						justify="start"
-						class="mb-3 backgroud3"
-					>
-						<div>{{beautySub(item.name,contentLen || 18)}}</div>
-
-					</v-btn>
-				</v-container>
-			</v-card>
+			<v-expansion-panels
+				v-model="panels"
+				accordion
+				multiple
+			>
+				<v-expansion-panel>
+					<v-expansion-panel-header></v-expansion-panel-header>
+					<v-expansion-panel-content>
+						<v-btn
+							v-for="item in data"
+							:key="item._id"
+							:to="`/season?id=${item._id}`"
+							block
+							justify="start"
+							class="mb-3 backgroud3"
+						>
+							<div>{{beautySub(item.name,contentLen || 18)}}</div>
+						</v-btn>
+					</v-expansion-panel-content>
+				</v-expansion-panel>
+			</v-expansion-panels>
 		</v-col>
+
 	</v-col>
 </template>
 
@@ -37,6 +44,13 @@ export default class SeasonList extends Vue {
 	@Prop(Array) data: Array<any>;
 	@Prop(Number) contentLen: number;
 	@Prop(Number) md: number;
+	@Prop(Boolean) close: boolean;
+
+	panels: Array<number> = [0];
+
+	created() {
+		this.panels = this.close ? [] : [0];
+	}
 
 	beautySub(str, len) {
 		var reg = /[\u4e00-\u9fa5]/g;
