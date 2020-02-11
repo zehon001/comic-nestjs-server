@@ -1,10 +1,18 @@
 <template>
 	<v-container class="fill-height">
 		<div style="position: absolute;top: 0;left: 0;">首页</div>
-		<v-row align="center" justify="center">
+		<v-row
+			align="center"
+			justify="center"
+		>
 			<v-tooltip right>
 				<template v-slot:activator="{ on }">
-					<v-btn :href="source" icon large target="_blank" v-on="on">
+					<v-btn
+						icon
+						large
+						target="_blank"
+						v-on="on"
+					>
 						<v-icon large>mdi-code-tags</v-icon>
 					</v-btn>
 				</template>

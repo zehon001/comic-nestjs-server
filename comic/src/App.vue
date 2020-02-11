@@ -3,6 +3,7 @@
 		<v-navigation-drawer
 			v-model="drawer"
 			clipped
+			temporary
 			app
 		>
 			<v-list dense>
@@ -27,10 +28,10 @@
 
 		<v-app-bar
 			:clipped-left="$vuetify.breakpoint.lgAndUp"
-			app
-			hide-on-scrol
 			color="primary"
 			dark
+			short
+			max-height="56px"
 		>
 			<v-app-bar-nav-icon @click.stop="drawer = !drawer" />
 			<v-toolbar-title
@@ -39,18 +40,22 @@
 			>
 				<span class="">漫画在线</span>
 			</v-toolbar-title>
-
-			<v-text-field
-				flat
-				solo-inverted
-				hide-details
-				clearable
-				dense
-				prepend-inner-icon="mdi-magnify"
-				label="搜索"
-				v-model="searchContent"
-				@keydown="onKeyDown"
-			/>
+			<!-- 弹出带搜索按钮的输入法 -->
+			<v-form action="javascript:(function(){return true;})()">
+				<v-text-field
+					flat
+					solo-inverted
+					hide-details
+					clearable
+					dense
+					prepend-inner-icon="mdi-magnify"
+					label="搜索"
+					type='search'
+					ref="search"
+					@keyup.13="onSearch"
+					v-model="searchContent"
+				/>
+			</v-form>
 			<v-spacer />
 			<v-btn icon>
 				<v-icon>mdi-apps</v-icon>
@@ -85,7 +90,7 @@
 			fab
 			fixed
 			right
-			@click="dialog = !dialog"
+			@click="toTop"
 		>
 			<v-icon>mdi-plus</v-icon>
 		</v-btn>
@@ -111,14 +116,28 @@ export default {
 	}),
 	created() {},
 	methods: {
-		onKeyDown(event) {
-			if (event.code == "Enter") {
+		onSearch() {
+			this.$refs.search.blur();
+			if (this.searchContent) {
 				console.log("搜索：" + this.searchContent);
 				this.$router.push({
 					path: "/search",
 					query: { content: this.searchContent }
 				});
 			}
+		},
+		toTop() {
+			console.log("滚动到顶部");
+			let distance =
+				document.documentElement.scrollTop || document.body.scrollTop; //获得当前高度
+			let step = distance / 10; //每步的距离
+			(function jump() {
+				if (distance > 0) {
+					distance -= step;
+					window.scrollTo(0, distance);
+					setTimeout(jump, 10);
+				}
+			})();
 		}
 	},
 	mounted() {}
@@ -131,4 +150,16 @@ export default {
 	background-color: black;
 	// margin-top: 60px;
 }
+// html {
+// 	height: 100%;
+// 	width: 100%;
+// 	overflow: hidden;
+// }
+
+// body {
+// 	height: 100%;
+// 	width: 100%;
+// 	overflow: auto;
+// 	-webkit-overflow-scrolling: touch;
+// }
 </style>

@@ -26,14 +26,17 @@
 							:src="item"
 						> </v-img>
 						<v-row
-							class="pa-0 ma-0"
+							class="px-0 py-2 ma-0"
 							justify='center'
 						>{{ `(${beautySub(data.name||"",10)}) ${index+1}/${data.pages}`}}</v-row>
 					</v-col>
 				</v-card>
 				<!-- 按钮 -->
 				<v-card class="mt-3 py-3">
-					<v-row justify='center'>
+					<v-row
+						justify='center'
+						class="ma-0 pa-0"
+					>
 						<v-btn
 							class='primary mr-9'
 							@click="openSeason(data.pre)"
