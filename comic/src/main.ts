@@ -4,6 +4,7 @@ import axios from "axios";
 import vuetify from "./plugins/vuetify";
 import router from "./router";
 import components from "./components/index";
+import Tools from "./tools/tools";
 
 Vue.config.productionTip = false;
 
@@ -14,6 +15,8 @@ const $http = axios.create({
 Vue.prototype.$http = $http;
 
 Vue.prototype.$httpajax = $http;
+
+Vue.prototype.$tools = Tools.instance;
 
 components.init();
 

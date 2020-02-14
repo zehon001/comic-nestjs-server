@@ -63,5 +63,8 @@ const routes = [
 const router = new VueRouter({
 	routes
 });
+router.afterEach((to, from) => {
+	// console.log("切换页面");
+});
 
 export default router;

@@ -69,6 +69,7 @@
 			<v-btn
 				icon
 				large
+				to="/user"
 			>
 				<v-avatar
 					size="32px"

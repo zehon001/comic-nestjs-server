@@ -1,16 +1,11 @@
 <template>
 	<v-container class="pa-0">
 		<v-loading :loading="loading"></v-loading>
-		<v-row
+		<v-custom-panel
 			v-if="!loading"
-			justify='center'
 			class="py-0"
 		>
-			<v-col
-				cols="24"
-				md="7"
-				class="pa-0"
-			>
+			<v-custom-panel-content class="pa-0">
 				<!-- 图片区域 -->
 				<v-card
 					class='px-0 py-2'
@@ -28,7 +23,7 @@
 						<v-row
 							class="px-0 py-2 ma-0"
 							justify='center'
-						>{{ `(${beautySub(data.name||"",10)}) ${index+1}/${data.pages}`}}</v-row>
+						>{{ `(${$tools.beautySub(data.name||"",10)}) ${index+1}/${data.pages}`}}</v-row>
 					</v-col>
 				</v-card>
 				<!-- 按钮 -->
@@ -53,42 +48,30 @@
 						>下一章</v-btn>
 					</v-row>
 				</v-card>
-			</v-col>
-		</v-row>
+			</v-custom-panel-content>
+		</v-custom-panel>
 	</v-container>
 </template>
 
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";
+import { DBSeasonType } from "../tools/db.adapter.types";
 
 @Component({})
 export default class Search extends Vue {
 	loading: boolean = true;
 	// error: boolean = true;
 
-	data: any = {
-		images: [],
-		pages: 0, //总页数
-		pre: null, //上一话
-		next: null //下一话
-	};
-	ret: any = {};
-
+	data: DBSeasonType = new DBSeasonType();
+	get adapter() {
+		return this.$tools.dbAdapter;
+	}
 	async fetch() {
 		this.loading = true;
-		const res = await this.$http.get(
-			"/parseseason?id=" + this.$route.query.id
+		this.data = await this.adapter.getSeason(
+			this.$route.query.id as string
 		);
-		if (res.data.data) {
-			this.data = res.data.data.season;
-			this.data.pages = this.data.images.length;
-			this.data.pre = res.data.data.pre;
-			this.data.next = res.data.data.next;
-
-			this.ret = res.data;
-			console.log(this.data);
-			this.loading = false;
-		}
+		this.loading = false;
 	}
 	mounted() {
 		this.fetch();
@@ -100,26 +83,6 @@ export default class Search extends Vue {
 			path: "/season",
 			query: { id: id }
 		});
-	}
-
-	beautySub(str, len) {
-		var reg = /[\u4e00-\u9fa5]/g;
-		//汉字数量
-		var chineseCharNum = ~~(str.match(reg) && str.match(reg).length);
-		//真实长度
-		var realen = str.length + chineseCharNum;
-		//限制的长度
-		var limitlen = len * 2;
-		if (limitlen >= realen) return str;
-		else {
-			//裁剪
-			var slice = str.substr(0, limitlen);
-			//剩余汉字数量
-			chineseCharNum = ~~(slice.match(reg) && slice.match(reg).length);
-			//去掉汉字多余的长度
-			limitlen -= chineseCharNum;
-			return str.substr(0, limitlen) + "...";
-		}
 	}
 }
 </script>

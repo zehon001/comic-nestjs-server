@@ -226,7 +226,7 @@ export class ParserService {
 		update?: boolean
 	): Promise<DocumentType<Season>> {
 		if (season instanceof ParseSeasonRet) {
-			if (!comic) throw new StatusException("漫画集转换失败", 202);
+			if (!comic) throw new StatusException("漫画集转换失败");
 			else {
 				let model = update
 					? await this.seaonModel.findOneAndUpdate({ srcUrl: season.srcUrl }, season)

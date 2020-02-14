@@ -1,0 +1,36 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"strict": true,
+		"jsx": "preserve",
+		"importHelpers": true,
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"allowJs": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"sourceMap": true,
+		"baseUrl": ".",
+		"noImplicitAny": false,
+		"strictPropertyInitialization": false,
+		"types": ["webpack-env", "vuetify"],
+		"paths": {
+			"@/*": ["comic/src/*", "admin/src/*"]
+		},
+		"lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+	},
+	"include": [
+		"comic/src/**/*.ts",
+		"comic/src/**/*.tsx",
+		"comic/src/**/*.vue",
+		"comic/tests/**/*.ts",
+		"comic/tests/**/*.tsx",
+		"admin/src/**/*.ts",
+		"admin/src/**/*.tsx",
+		"admin/src/**/*.vue",
+		"admin/tests/**/*.ts",
+		"admin/tests/**/*.tsx"
+	],
+	"exclude": ["node_modules"]
+}

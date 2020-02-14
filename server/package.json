@@ -23,6 +23,8 @@
     "@nestjs/bull": "^0.0.1",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
+    "@nestjs/jwt": "^6.1.1",
+    "@nestjs/passport": "^6.1.1",
     "@nestjs/platform-express": "^6.7.2",
     "@nestjs/swagger": "^4.1.14",
     "@smallwei/avue": "2.3.6",
@@ -33,6 +35,8 @@
     "@types/md5": "^2.1.33",
     "@types/mongoose": "^5.5.41",
     "@types/node-fetch": "^2.5.4",
+    "@types/passport-jwt": "^3.0.3",
+    "@types/passport-local": "^1.0.33",
     "@types/underscore": "^1.9.4",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
@@ -43,6 +47,9 @@
     "nestjs-mongoose-crud": "^1.2.2",
     "nestjs-typegoose": "^7.0.0",
     "node-fetch": "^2.6.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
@@ -89,7 +96,9 @@
       "@lib/db/(.*)": "<rootDir>/libs/db/src/$1",
       "@lib/db": "<rootDir>/libs/db/src",
       "@app/parser/(.*)": "<rootDir>/libs/parser/src/$1",
-      "@app/parser": "<rootDir>/libs/parser/src"
+      "@app/parser": "<rootDir>/libs/parser/src",
+      "@app/common/(.*)": "<rootDir>/libs/common/src/$1",
+      "@app/common": "<rootDir>/libs/common/src"
     }
   }
 }

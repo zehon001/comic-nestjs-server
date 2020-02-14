@@ -10,7 +10,7 @@ export class StatusInterceptor implements NestInterceptor {
 			map((data: any) => {
 				return {
 					data,
-					code: 0,
+					statusCode: 0,
 					message: "请求成功"
 				};
 			})

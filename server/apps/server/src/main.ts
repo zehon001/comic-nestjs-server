@@ -24,6 +24,7 @@ async function bootstrap() {
 		.setTitle("Nestjs漫画服务器前端API-接口文档")
 		.setDescription("漫画前端界面使用")
 		.setVersion("1.0")
+		.addBearerAuth()
 		.build();
 	const document = SwaggerModule.createDocument(app, options);
 	SwaggerModule.setup("api-docs", app, document);

@@ -4,7 +4,7 @@
 		<div
 			v-if="!loading"
 			class="title font-weight-bold"
-		>{{`搜索 "${beautySub($route.query.content,6)}" 结果共 ${items.length} 条`}}</div>
+		>{{`搜索 "${$tools.beautySub($route.query.content,6)}" 结果共 ${items.length} 条`}}</div>
 		<div class="mt-2" />
 		<v-row
 			v-if="!loading"
@@ -29,7 +29,7 @@
 						</div>
 					</div>
 					<div class="subtitle-2 pl-0 pt-2">
-						{{beautySub(item.name,10)}}
+						{{$tools.beautySub(item.name,10)}}
 					</div>
 
 					<v-card-subtitle class='caption pl-0 py-0'>
@@ -50,35 +50,25 @@
 
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";
-
 @Component({})
 export default class Search extends Vue {
 	loading: boolean = true;
 	// error: boolean = true;
 
 	items: any[] = [];
+	get adapter() {
+		return this.$tools.dbAdapter;
+	}
 
 	async fetch() {
 		this.loading = true;
-		const res = await this.$http.post("/search", {
-			content: this.$route.query.content,
-			useParser: ""
-		});
-		this.items = res.data.data || [];
+		this.items = await this.adapter.search(this.$route.query.content);
 		console.log(this.items);
 		this.loading = false;
 	}
 	mounted() {
 		this.fetch();
 		console.log(this.$route);
-	}
-
-	beautySub(str, len) {
-		var reg = /[\u4e00-\u9fa5]/g,
-			slice = str.substring(0, len),
-			chineseCharNum = ~~(slice.match(reg) && slice.match(reg).length),
-			realen = slice.length * 2 - chineseCharNum;
-		return str.substr(0, realen) + (realen < str.length ? "..." : "");
 	}
 }
 </script>

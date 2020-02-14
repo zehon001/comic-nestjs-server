@@ -4,14 +4,16 @@ import { AppService } from "./app.service";
 import { DbModule } from "@lib/db";
 import { MulterModule } from "@nestjs/platform-express";
 import { ComicModule } from "./comic/comic.module";
-
+import { AuthModule } from "./auth/auth.module";
 @Module({
 	imports: [
 		MulterModule.register({
 			dest: "uploads"
 		}),
+		// CommonModule,
 		DbModule,
-		ComicModule
+		ComicModule,
+		AuthModule
 	],
 	controllers: [AppController],
 	providers: [AppService]
