@@ -22,7 +22,8 @@ export class AuthController {
 	@Post("login")
 	async login(@Body() loginDto: AuthLoginDto, @Request() req) {
 		return {
-			accessToken: this.jwtService.sign(String(req.user._id))
+			accessToken: this.jwtService.sign(String(req.user._id)),
+			user: await this.authService.validateUserById(req.user._id)
 		};
 	}
 }

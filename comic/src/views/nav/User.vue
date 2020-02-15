@@ -5,74 +5,87 @@
 			v-if="!loading"
 			class="py-0"
 		>
-			<v-custom-panel-content v-if="data">
-				<v-card>已经登录</v-card>
-			</v-custom-panel-content>
 
 			<!-- 未登录 -->
-			<v-custom-panel-content
-				md="5"
-				v-else
-			>
-
-				<v-card class="elevation-12 mx-4">
-					<v-toolbar color="primary">
-						<v-toolbar-title>登录</v-toolbar-title>
-						<v-spacer />
-					</v-toolbar>
-					<v-card-text class="pb-0">
-						<v-form
-							ref='loginForm'
-							action="javascript:(function(){return true;})()"
-							lazy-validation
-						>
-							<v-text-field
-								label="账号"
-								v-model="username"
-								:rules="usernameRules"
-								name="username"
-								ref="username"
-								@keyup.13="$refs.username.blur()"
-								required
-							>
-								<template v-slot:prepend>
-									<v-icon>mdi-account-circle</v-icon>
-								</template>
-							</v-text-field>
-
-							<v-text-field
-								label="密码"
-								v-model="password"
-								:rules="passwordRules"
-								name="password"
-								type="password"
-								ref="password"
-								@keyup.13="$refs.password.blur()"
-								required
-							>
-								<template v-slot:prepend>
-									<v-icon>mdi-lock</v-icon>
-								</template>
-							</v-text-field>
-							<v-row justify='center'>
-								<v-checkbox
-									v-model="checkbox"
-									:rules="[v => !!v || '必须同意条款!']"
-									label="是否同意条款?"
-									required
-								></v-checkbox>
-							</v-row>
-						</v-form>
-					</v-card-text>
-					<v-card-actions class="pt-0 pb-6">
+			<v-custom-panel-content md="5">
+				<v-card>
+					<v-container>
 						<v-row justify='center'>
-							<v-btn
-								@click="onLoginClick"
-								color="primary"
-							>确认登录</v-btn>
+							<v-avatar item>
+								<v-img
+									src="@/assets/head.jpg"
+									alt="Vuetify"
+								/>
+							</v-avatar>
 						</v-row>
-					</v-card-actions>
+						<v-row justify='center'>
+							<v-card-title class="pb-0">漫画在线</v-card-title>
+						</v-row>
+						<v-row justify='center'>
+							<v-card-subtitle v-if='data'>{{"用户名："+data.username}}</v-card-subtitle>
+							<v-card-subtitle v-else>登录可以保存操作信息</v-card-subtitle>
+						</v-row>
+						<v-row
+							justify='center'
+							v-if='!data'
+						>
+							<v-col align='center'>
+								<!-- 注册按钮 -->
+								<v-btn
+									color="primary mr-6"
+									dark
+									@click.stop="registerDialog = true"
+								>
+									注册
+								</v-btn>
+								<v-register-dialog
+									v-model="registerDialog"
+									:onRegister="onRegister"
+								></v-register-dialog>
+
+								<!-- 登录按钮 -->
+								<v-btn
+									color="primary"
+									dark
+									@click.stop="loginDialog = true"
+								>
+									登录
+								</v-btn>
+								<v-login-dialog
+									v-model="loginDialog"
+									:onLogin="onLogin"
+								></v-login-dialog>
+
+							</v-col>
+						</v-row>
+
+					</v-container>
 				</v-card>
+
+				<v-card class="mt-3">
+					<v-container>
+						<v-list>
+							<div
+								v-for="(item,index) in list"
+								:key="index"
+							>
+								<v-list-item @click="item.event">
+									<v-list-item-icon>
+										<v-icon color="primary">{{item.icon}}</v-icon>
+									</v-list-item-icon>
+
+									<v-list-item-title>{{item.text}}</v-list-item-title>
+									<v-list-item-icon>
+										<v-icon color="primary">mdi-chevron-right</v-icon>
+									</v-list-item-icon>
+								</v-list-item>
+								<v-divider v-if="index!=list.length-1"></v-divider>
+							</div>
+
+						</v-list>
+					</v-container>
+				</v-card>
+
 			</v-custom-panel-content>
 
 		</v-custom-panel>
@@ -86,19 +99,31 @@ import { Vue, Component } from "vue-property-decorator";
 export default class User extends Vue {
 	loading: boolean = true;
 	data: any = null;
-	username: string = "";
-	usernameRules: Array<Function> = [
-		v => !!v || "用户名不能为空",
-		v => (v && v.length >= 4) || "用户名不能小于4位",
-		v => (v && v.length <= 16) || "用户名不能超过16位"
+	loginDialog: boolean = false;
+	registerDialog: boolean = false;
+
+	list: Array<any> = [
+		{
+			icon: "mdi-crown",
+			text: "我的VIP",
+			event: this.onVipClick
+		},
+		{
+			icon: "mdi-wallet",
+			text: "我的钱包",
+			event: this.onWalletClick
+		},
+		{
+			icon: "mdi-coin",
+			text: "充值",
+			event: this.onRechargeClick
+		},
+		{
+			icon: "mdi-file-edit",
+			text: "意见反馈",
+			event: this.onIdeaClick
+		}
 	];
-	password: string = "";
-	passwordRules: Array<Function> = [
-		v => !!v || "密码不能为空",
-		v => (v && v.length >= 4) || "密码不能小于4位",
-		v => (v && v.length <= 16) || "密码不能超过16位"
-	];
-	checkbox: boolean = false;
 
 	// error: boolean = true;
 	get adapter() {
@@ -113,14 +138,39 @@ export default class User extends Vue {
 	mounted() {
 		this.fetch();
 	}
-
-	onLoginClick() {
-		if (this.$refs.loginForm["validate"]()) {
-			console.log("登录");
-			console.log(this.username);
-			console.log(this.password);
+	async onLogin(username, password) {
+		// console.log("onLogin");
+		// console.log(username);
+		// console.log(password);
+		const ret = await this.adapter.login(username, password);
+		console.log(ret);
+		if (ret) {
+			this.loginDialog = false;
+			this.data = ret;
+			this.$tools.toast("登录成功", "success");
 		}
 	}
+
+	async onRegister(username, password) {
+		// console.log("onRegister");
+		// console.log(username);
+		// console.log(password);
+		const ret = await this.adapter.register(username, password);
+		if (ret) {
+			this.registerDialog = false;
+			this.$tools.toast("注册成功", "success");
+		}
+	}
+
+	/**我的vip */
+	onVipClick() {}
+
+	/**钱包 */
+	onWalletClick() {}
+	/**充值 */
+	onRechargeClick() {}
+	/**意见反馈 */
+	onIdeaClick() {}
 }
 </script>
 

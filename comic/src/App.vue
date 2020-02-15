@@ -1,6 +1,6 @@
 <template>
 	<v-app
-		id="inspire"
+		id="app"
 		v-scroll="onScroll"
 	>
 		<v-navigation-drawer
@@ -160,7 +160,21 @@
 
 			</v-speed-dial>
 		</v-fab-transition>
-
+		<v-snackbar
+			v-model="toastVisible"
+			:timeout="toastDelay"
+			:color="toastColor"
+		>
+			{{ toastMsg }}
+			<v-btn
+				icon
+				small
+				@click="toastVisible = false"
+			>
+				<v-icon>mdi-close</v-icon>
+			</v-btn>
+		</v-snackbar>
+		<!-- <v-btn @click="$tools.toast('dhaushdi','',3000)">弹消息</v-btn> -->
 	</v-app>
 </template>
 
@@ -174,16 +188,26 @@ export default {
 		scrollTop: 0,
 		hideFloatScrollTop: 56,
 		floatFab: false,
+		toastVisible: false,
+		toastMsg: "",
+		toastDelay: 3000,
+		toastColor: null,
 		items: [
 			{ icon: "mdi-home", text: "首页", link: "/home" },
 			{ icon: "mdi-history", text: "观看历史", link: "/history" },
 			{ icon: "mdi-star", text: "收藏", link: "/star" },
-			{ icon: "mdi-settings", text: "设置", link: "/setting" },
 			{ icon: "mdi-account", text: "个人中心", link: "/user" },
+			{ icon: "mdi-settings", text: "设置", link: "/setting" },
 			{ icon: "mdi-help-circle", text: "帮助", link: "/help" }
 		]
 	}),
-	created() {},
+	created() {
+		this.$tools.toast = this.toast.bind(this);
+
+		this.$vuetify.theme.dark = !!this.$tools.dbAdapter.getSettings()
+			.themeDark;
+	},
+
 	computed: {
 		scrollTopOptions() {
 			return {
@@ -215,7 +239,17 @@ export default {
 				document.documentElement.scrollTop || document.body.scrollTop;
 			if (this.scrollTop <= this.hideFloatScrollTop)
 				this.floatFab = false;
-		}
+		},
+		toast(msg, color, delay = 3000) {
+			this.toastColor = color;
+			this.toastVisible = false;
+			setTimeout(() => {
+				this.toastMsg = msg;
+				this.toastDelay = delay;
+				this.toastVisible = true;
+			}, 1);
+		},
+		error() {}
 	},
 	mounted() {}
 };
@@ -223,8 +257,8 @@ export default {
 
 <style lang="scss">
 #inspire {
-	background: black;
-	background-color: black;
+	// background: black;
+	// background-color: black;
 	// margin-top: 60px;
 }
 // html {

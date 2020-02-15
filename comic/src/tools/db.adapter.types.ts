@@ -20,6 +20,9 @@ export class DBSeasonType {
 	pre: string;
 	/**下一集id */
 	next: string;
+
+	/**是否是观看历史 */
+	isHistory: boolean;
 }
 
 /**漫画数据类型 */
@@ -44,4 +47,15 @@ export class DBComicType {
 	seasons_book: DBSeasonType[] = [];
 }
 
-export class DBUserType {}
+export class DBUserType {
+	id: string;
+	username: string;
+	/**历史集记录id列表 */
+	seasonhistory: Array<string> = [];
+	/**收藏漫画id列表 */
+	stars: Array<string> = [];
+}
+
+export class DBSettingType {
+	themeDark: boolean;
+}

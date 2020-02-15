@@ -1,4 +1,5 @@
-<template> <div>观看历史</div></template>
+<template>
+</template>
 
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import { InjectModel } from "nestjs-typegoose";
 import { User } from "@lib/db/models/user.model";
 import { ModelType, DocumentType } from "@typegoose/typegoose/lib/types";
@@ -8,10 +8,14 @@ import { Comic } from "@lib/db/models/comic.model";
 @Injectable()
 export class UserService {
 	constructor(
+		@InjectModel(User) private readonly userModel: ModelType<User>,
 		@InjectModel(Season) private readonly seasonModel: ModelType<Season>,
 		@InjectModel(Comic) private readonly comicModel: ModelType<Comic>
 	) {}
 
+	async findUser(uid: string) {
+		return await this.userModel.findById(uid);
+	}
 	/**集保存到历史记录 */
 	async historySeason(user: DocumentType<User>, sid: string) {
 		if (user) {
@@ -34,6 +38,9 @@ export class UserService {
 				}
 
 				await user.save();
+
+				// await user.depopulate("seasonhistory");
+				// await season.depopulate("comic");
 			}
 		}
 	}
@@ -53,6 +60,7 @@ export class UserService {
 					user.stars.push(comic);
 					await user.save();
 				}
+				// await user.depopulate("stars");
 			}
 		}
 	}

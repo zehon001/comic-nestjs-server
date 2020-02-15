@@ -18,7 +18,8 @@
 							:to="`/season?id=${item._id}`"
 							block
 							justify="start"
-							class="mb-3 backgroud3"
+							class="mb-3"
+							:color="item.isHistory?'primary':'backgroud3'"
 						>
 							<div>{{$tools.beautySub(item.name,contentLen || 18)}}</div>
 						</v-btn>

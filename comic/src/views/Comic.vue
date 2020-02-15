@@ -22,6 +22,15 @@
 								<v-card-subtitle class="px-0 py-1">{{"作者："+data.author}}</v-card-subtitle>
 								<v-card-subtitle class="px-0 py-1">{{"最后更新："+data.lastUpdateAt}}</v-card-subtitle>
 								<v-card-subtitle class="px-0 py-1">{{"暂无介绍"}}</v-card-subtitle>
+								<v-btn
+									class="mt-6"
+									:color="stared?'primary':undefined"
+									@click="onStarClick"
+									:disabled="starDisabled"
+								>
+									<v-icon>{{stared?"mdi-star":"mdi-star-outline"}}</v-icon>
+									<div>{{stared?"已收藏":"收藏"}}</div>
+								</v-btn>
 							</v-col>
 						</v-row>
 					</v-container>
@@ -63,12 +72,20 @@ export default class Search extends Vue {
 
 	items: any[] = [];
 	data: DBComicType = new DBComicType();
+	/**是否已收藏 */
+	stared: boolean = false;
+	starDisabled: boolean = false;
 	get adapter() {
 		return this.$tools.dbAdapter;
 	}
 	async fetch() {
 		this.loading = true;
 		this.data = await this.adapter.getComic(this.$route.query.id as string);
+		const userdata = await this.adapter.getUserData();
+		if (userdata) {
+			const idx = userdata.stars.findIndex(v => v == this.data._id);
+			this.stared = idx >= 0;
+		}
 		this.loading = false;
 	}
 	created() {
@@ -78,6 +95,24 @@ export default class Search extends Vue {
 		// console.log("渲染完毕");
 		this.fetch();
 		// console.log(this.$route);
+	}
+
+	async onStarClick() {
+		// this.stared = !this.stared;
+		this.starDisabled = true;
+		if (this.stared) {
+			await this.adapter.cancelStarComic(this.data._id);
+		} else {
+			await this.adapter.starComic(this.data._id);
+		}
+		const userdata = await this.adapter.getUserData();
+		if (userdata) {
+			const idx = userdata.stars.findIndex(v => v == this.data._id);
+			this.stared = idx >= 0;
+			console.log(this.stared);
+		}
+		console.log(userdata);
+		this.starDisabled = false;
 	}
 }
 </script>

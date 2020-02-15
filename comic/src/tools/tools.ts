@@ -31,4 +31,7 @@ export default class Tools {
 			return str.substr(0, limitlen) + "...";
 		}
 	}
+
+	//消息框 在App.vue中绑定
+	toast(msg, color, delay = 3000) {}
 }

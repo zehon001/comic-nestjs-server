@@ -27,7 +27,9 @@ export class ComicController {
 	@ApiOperation({ summary: "解析漫画" })
 	@ApiBearerAuth()
 	async parseComic(@Query("id") id: string, @Request() req) {
-		return await this.comicService.parseComic(id);
+		const ret = await this.comicService.parseComic(id);
+		ret["user"] = req.user; //带上用户信息 保持历史记录和收藏最新
+		return ret;
 	}
 
 	@UseGuards(JwtAuthBearerGuard)
@@ -37,6 +39,7 @@ export class ComicController {
 	async parseSeason(@Query("id") id: string, @Request() req) {
 		const ret = await this.comicService.parseSeason(id);
 		if (!ret.err) await this.userService.historySeason(req.user, id);
+		// ret["user"] = req.user;
 		return ret;
 	}
 }

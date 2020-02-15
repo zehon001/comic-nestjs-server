@@ -15,7 +15,7 @@ export class UserController {
 	@ApiBearerAuth()
 	async starComic(@Query("id") id: string, @Request() req) {
 		await this.userService.starComic(req.user, id);
-		return req.user;
+		return req.user && (await this.userService.findUser(req.user._id));
 	}
 
 	@UseGuards(AuthGuard("jwt"))
@@ -24,6 +24,6 @@ export class UserController {
 	@ApiBearerAuth()
 	async cancelStarComic(@Query("id") id: string, @Request() req) {
 		await this.userService.cancelStarComic(req.user, id);
-		return req.user;
+		return req.user && (await this.userService.findUser(req.user._id));
 	}
 }
