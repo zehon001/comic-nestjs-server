@@ -4,7 +4,7 @@ import MyLogger from "utils/MyLogger";
 import { ComicSearchDto } from "./comic.dto";
 import { InjectModel } from "nestjs-typegoose";
 import { Season } from "@lib/db/models/season.model";
-import { ModelType } from "@typegoose/typegoose/lib/types";
+import { ModelType, DocumentType } from "@typegoose/typegoose/lib/types";
 
 @Injectable()
 export class ComicService {
@@ -21,7 +21,15 @@ export class ComicService {
 	}
 
 	async parseComic(id: string) {
-		return await this.parserService.parseComic(id);
+		const ret = await this.parserService.parseComic(id);
+		//移除所有漫画地址
+		if (!ret.err) {
+			if (ret.comic.seasons)
+				ret.comic.seasons.map((s: DocumentType<Season>) => {
+					if (s.images) s.images.length = 0;
+				});
+		}
+		return ret;
 	}
 
 	async parseSeason(id: string) {
