@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { AxiosInstance, AxiosResponse, AxiosRequestConfig } from "axios";
+import { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosError } from "axios";
 import { DBComicType, DBSeasonType, DBUserType, DBSettingType } from "./db.adapter.types";
 
 class CustomHttp {
@@ -9,11 +9,17 @@ class CustomHttp {
 	}
 	get(url: string, config?: AxiosRequestConfig | undefined): Promise<AxiosResponse<any>> {
 		config = this.attachHeaders(config);
-		return this.http.get(url, config);
+		const ret = this.http.get(url, config).catch((err: AxiosError) => {
+			return err.response as any;
+		});
+		return ret;
 	}
 	post(url: string, data?: any, config?: AxiosRequestConfig | undefined): Promise<AxiosResponse<any>> {
 		config = this.attachHeaders(config);
-		return this.http.post(url, data, config);
+		const ret = this.http.post(url, data, config).catch((err: AxiosError) => {
+			return err.response as any;
+		});
+		return ret;
 	}
 	attachHeaders(config?: AxiosRequestConfig | undefined) {
 		if (!config) config = {};
@@ -23,6 +29,11 @@ class CustomHttp {
 	}
 	setHeader(key, value) {
 		this.headers[key] = value;
+	}
+	removeHeader(key) {
+		if (this.headers["hasOwnProperty"](key)) {
+			delete this.headers[key];
+		}
 	}
 }
 
@@ -38,11 +49,12 @@ export default class DBAdapter {
 	public error(msg) {
 		Vue.prototype.$tools.toast(msg, "error");
 	}
-	public isOK(res) {
-		if (res.data && res.data.statusCode == 0) {
+	public isOK(res: AxiosResponse<any>) {
+		if (res.data.statusCode == 0) {
 			return true;
 		} else {
-			this.error(res.data.message || res.statusText);
+			if (res.status == 401) res.data.message = "登录已过期";
+			this.error(res.data.message || res.status + " " + res.statusText);
 			return false;
 		}
 	}
@@ -138,6 +150,11 @@ export default class DBAdapter {
 			return null;
 		}
 	}
+	/**退出登录 */
+	public async logout() {
+		this.accessToken = "";
+		return this.setUserData(null);
+	}
 	/**收藏漫画 */
 	public async starComic(id: string) {
 		const res = await this.http.get("/user/starcomic?id=" + id);
@@ -163,7 +180,7 @@ export default class DBAdapter {
 			accessToken: this.accessToken
 		};
 		if (this.accessToken) this.http.setHeader("Authorization", "Bearer " + this.accessToken);
-		else this.http.setHeader("Authorization", undefined);
+		else this.http.removeHeader("Authorization");
 		window.localStorage.setItem("comic_userdata", JSON.stringify(userdata));
 		return this.user;
 	}
@@ -180,7 +197,7 @@ export default class DBAdapter {
 			this.user = userdata.user;
 			this.accessToken = userdata.accessToken;
 			if (this.accessToken) this.http.setHeader("Authorization", "Bearer " + this.accessToken);
-			else this.http.setHeader("Authorization", undefined);
+			else this.http.removeHeader("Authorization");
 			console.log("加载用户数据");
 			console.log(userdata);
 		} else {

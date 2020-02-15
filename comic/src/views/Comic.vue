@@ -111,7 +111,7 @@ export default class Search extends Vue {
 			this.stared = idx >= 0;
 			console.log(this.stared);
 		}
-		console.log(userdata);
+		// console.log(userdata);
 		this.starDisabled = false;
 	}
 }

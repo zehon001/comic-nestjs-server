@@ -10,11 +10,11 @@ export default new Vuetify({
 		themes: {
 			light: {
 				backgroud: "#FFFFFF",
-				backgroud2: colors.grey.darken4,
-				backgroud3: colors.grey.darken3,
-				backgroud4: colors.grey.darken2,
-				backgroud5: colors.grey.darken1,
-				backgroud6: colors.grey.lighten1,
+				backgroud2: colors.grey.lighten4,
+				backgroud3: colors.grey.lighten3,
+				backgroud4: colors.grey.lighten2,
+				backgroud5: colors.grey.lighten1,
+				backgroud6: colors.grey.darken1,
 				primary: colors.blue.darken3,
 				secondary: colors.grey.darken1,
 				accent: colors.shades.white,

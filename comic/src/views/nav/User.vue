@@ -86,6 +86,22 @@
 					</v-container>
 				</v-card>
 
+				<v-card
+					class="mt-3"
+					v-if="data"
+				>
+					<v-container>
+						<v-row justify="center">
+							<v-btn
+								color="primary"
+								@click="onLogout"
+							>
+								退出登录
+							</v-btn>
+						</v-row>
+					</v-container>
+				</v-card>
+
 			</v-custom-panel-content>
 
 		</v-custom-panel>
@@ -160,6 +176,10 @@ export default class User extends Vue {
 			this.registerDialog = false;
 			this.$tools.toast("注册成功", "success");
 		}
+	}
+
+	async onLogout() {
+		this.data = await this.adapter.logout();
 	}
 
 	/**我的vip */
