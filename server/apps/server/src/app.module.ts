@@ -5,6 +5,7 @@ import { DbModule } from "@lib/db";
 import { MulterModule } from "@nestjs/platform-express";
 import { ComicModule } from "./comic/comic.module";
 import { AuthModule } from "./auth/auth.module";
+import { UserModule } from "./user/user.module";
 @Module({
 	imports: [
 		MulterModule.register({
@@ -13,7 +14,8 @@ import { AuthModule } from "./auth/auth.module";
 		// CommonModule,
 		DbModule,
 		ComicModule,
-		AuthModule
+		AuthModule,
+		UserModule
 	],
 	controllers: [AppController],
 	providers: [AppService]

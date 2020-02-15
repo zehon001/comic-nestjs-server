@@ -3,11 +3,15 @@ import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { ComicSearchDto } from "./comic.dto";
 import { ComicService } from "./comic.service";
 import { JwtAuthBearerGuard } from "../auth/JwtAuthBearerGuard";
+import { UserService } from "../user/user.service";
 
 @Controller("comic")
 @ApiTags("漫画接口")
 export class ComicController {
-	constructor(@Inject(ComicService) private readonly comicService: ComicService) {}
+	constructor(
+		@Inject(ComicService) private readonly comicService: ComicService,
+		@Inject(UserService) private readonly userService: UserService
+	) {}
 
 	@UseGuards(JwtAuthBearerGuard)
 	@Post("search")
@@ -29,7 +33,10 @@ export class ComicController {
 	@UseGuards(JwtAuthBearerGuard)
 	@Get("parseseason")
 	@ApiOperation({ summary: "解析一集" })
+	@ApiBearerAuth()
 	async parseSeason(@Query("id") id: string, @Request() req) {
-		return await this.comicService.parseSeason(id);
+		const ret = await this.comicService.parseSeason(id);
+		if (!ret.err) await this.userService.historySeason(req.user, id);
+		return ret;
 	}
 }
