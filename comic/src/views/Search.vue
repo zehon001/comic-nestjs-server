@@ -1,33 +1,33 @@
 <template>
-	<v-container class="pa-1">
+	<v-container class="pa-0   align-self-start">
 		<v-loading :loading="loading" />
 		<div
 			v-if="!loading"
-			class="title font-weight-bold"
+			class="title font-weight-bold mx-1"
 		>{{`搜索 "${$tools.beautySub($route.query.content,6)}" 结果共 ${items.length} 条`}}</div>
-		<div class="mt-2" />
+
 		<v-row
 			v-if="!loading"
-			align='start'
-			justify='start'
+			class="pa-0 ma-0"
 		>
 			<v-col
 				v-for="item in items"
 				:key="item._id"
 				class="px-0 py-2"
+				cols="6"
+				md="2"
 			>
+
 				<v-card
 					:to="`/comic?id=${item._id}`"
-					class="card mx-auto"
+					class="mx-1"
+					min-height="20em"
 				>
-					<div>
-						<div class="card-img-area">
-							<v-img
-								class="card-img"
-								:src="item.cover"
-							></v-img>
-						</div>
-					</div>
+					<v-img
+						:src="item.cover"
+						height="15em"
+					></v-img>
+
 					<div class="subtitle-2 pl-0 pt-2">
 						{{$tools.beautySub(item.name,10)}}
 					</div>
@@ -75,16 +75,4 @@ export default class Search extends Vue {
 </script>
 
 <style>
-.card {
-	width: 11em;
-	height: 19.5em;
-	max-height: 19.5em;
-}
-.card-img-area {
-	height: 60%;
-	padding-top: 2px;
-}
-.card-img {
-	width: 100%;
-}
 </style>

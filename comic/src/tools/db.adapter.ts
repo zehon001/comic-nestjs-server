@@ -99,7 +99,7 @@ export default class DBAdapter {
 					});
 					if (idx >= 0) s.isHistory = true;
 				}
-				if (s.isHistory) console.log(s.name);
+				// if (s.isHistory) console.log(s.name);
 				switch (s.type) {
 					case "normal":
 						comic.seasons.push(s);
@@ -147,7 +147,7 @@ export default class DBAdapter {
 			password
 		});
 		if (this.isOK(res)) {
-			console.log(res.data);
+			// console.log(res.data);
 			this.accessToken = res.data.data.accessToken;
 			this.user = res.data.data.user;
 			return this.setUserData(this.user);
@@ -164,7 +164,7 @@ export default class DBAdapter {
 	public async starComic(id: string): Promise<DBUserType | null> {
 		const res = await this.http.get("/user/starcomic?id=" + id);
 		if (this.isOK(res)) {
-			console.log(res.data);
+			// console.log(res.data);
 			return this.setUserData(res.data.data);
 		} else return null;
 	}
@@ -172,7 +172,7 @@ export default class DBAdapter {
 	public async cancelStarComic(id: string): Promise<DBUserType | null> {
 		const res = await this.http.get("/user/cancelstarcomic?id=" + id);
 		if (this.isOK(res)) {
-			console.log(res.data);
+			// console.log(res.data);
 			return this.setUserData(res.data.data);
 		} else return null;
 	}
@@ -181,7 +181,7 @@ export default class DBAdapter {
 	public async getSeasonHistory(): Promise<DBSeasonType[]> {
 		const res = await this.http.get("/user/seasonhistory");
 		if (this.isOK(res)) {
-			console.log(res.data);
+			// console.log(res.data);
 			return res.data.data;
 		} else return [];
 	}
@@ -190,7 +190,7 @@ export default class DBAdapter {
 	public async getStars(): Promise<DBComicType[]> {
 		const res = await this.http.get("/user/stars");
 		if (this.isOK(res)) {
-			console.log(res.data);
+			// console.log(res.data);
 			return res.data.data;
 		} else return [];
 	}
@@ -221,8 +221,8 @@ export default class DBAdapter {
 			this.accessToken = userdata.accessToken;
 			if (this.accessToken) this.http.setHeader("Authorization", "Bearer " + this.accessToken);
 			else this.http.removeHeader("Authorization");
-			console.log("加载用户数据");
-			console.log(userdata);
+			// console.log("加载用户数据");
+			// console.log(userdata);
 		} else {
 			this.user = null;
 			this.accessToken = "";
