@@ -76,4 +76,23 @@ export class UserService {
 			}
 		}
 	}
+
+	/**获取用户历史记录 */
+	async getSeasonHistory(user: DocumentType<User>) {
+		await user.populate("seasonhistory").execPopulate();
+		const seasons = user.seasonhistory as DocumentType<Season>[];
+		let season: DocumentType<Season>;
+		for (let i = 0; i < seasons.length; i++) {
+			season = seasons[i];
+			await season.populate("comic").execPopulate();
+			if (season.images) season.images.length = 0; //减少字节传输
+		}
+		return user.seasonhistory as DocumentType<Season>[];
+	}
+
+	/**获取用户收藏列表 */
+	async getStars(user: DocumentType<User>) {
+		await user.populate("stars").execPopulate();
+		return user.stars as DocumentType<Comic>[];
+	}
 }

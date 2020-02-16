@@ -15,7 +15,7 @@
 								align='center'
 								class="pa-0 ma-0"
 							>
-								<v-col>主题颜色</v-col>
+								<v-col>主题风格</v-col>
 								<v-switch
 									v-model="$vuetify.theme.dark"
 									:label="themeDarkName"
@@ -54,7 +54,7 @@ export default class Setting extends Vue {
 	loading: boolean = false;
 	settings: any = this.$tools.dbAdapter.getSettings();
 	get themeDarkName() {
-		return this["$vuetify"].theme.dark ? "深色" : "亮色";
+		return this["$vuetify"].theme.dark ? "黑夜" : "白天";
 	}
 
 	saveSettings() {

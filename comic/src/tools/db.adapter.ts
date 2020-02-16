@@ -161,20 +161,38 @@ export default class DBAdapter {
 		return this.setUserData(null);
 	}
 	/**收藏漫画 */
-	public async starComic(id: string) {
+	public async starComic(id: string): Promise<DBUserType | null> {
 		const res = await this.http.get("/user/starcomic?id=" + id);
 		if (this.isOK(res)) {
 			console.log(res.data);
 			return this.setUserData(res.data.data);
 		} else return null;
 	}
-	//取消收藏漫画
-	public async cancelStarComic(id: string) {
+	/**取消收藏漫画*/
+	public async cancelStarComic(id: string): Promise<DBUserType | null> {
 		const res = await this.http.get("/user/cancelstarcomic?id=" + id);
 		if (this.isOK(res)) {
 			console.log(res.data);
 			return this.setUserData(res.data.data);
 		} else return null;
+	}
+
+	/**获取用户浏览记录 */
+	public async getSeasonHistory(): Promise<DBSeasonType[]> {
+		const res = await this.http.get("/user/seasonhistory");
+		if (this.isOK(res)) {
+			console.log(res.data);
+			return res.data.data;
+		} else return [];
+	}
+
+	/**获取用户收藏列表 */
+	public async getStars(): Promise<DBComicType[]> {
+		const res = await this.http.get("/user/stars");
+		if (this.isOK(res)) {
+			console.log(res.data);
+			return res.data.data;
+		} else return [];
 	}
 
 	/**保存用户数据 */

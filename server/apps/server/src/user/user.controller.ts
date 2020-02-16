@@ -15,7 +15,7 @@ export class UserController {
 	@ApiBearerAuth()
 	async starComic(@Query("id") id: string, @Request() req) {
 		await this.userService.starComic(req.user, id);
-		return req.user && (await this.userService.findUser(req.user._id));
+		return await this.userService.findUser(req.user._id);
 	}
 
 	@UseGuards(AuthGuard("jwt"))
@@ -24,6 +24,22 @@ export class UserController {
 	@ApiBearerAuth()
 	async cancelStarComic(@Query("id") id: string, @Request() req) {
 		await this.userService.cancelStarComic(req.user, id);
-		return req.user && (await this.userService.findUser(req.user._id));
+		return await this.userService.findUser(req.user._id);
+	}
+
+	@UseGuards(AuthGuard("jwt"))
+	@Get("seasonhistory")
+	@ApiOperation({ summary: "查询漫画历史记录" })
+	@ApiBearerAuth()
+	async seasonHistory(@Request() req) {
+		return await this.userService.getSeasonHistory(req.user);
+	}
+
+	@UseGuards(AuthGuard("jwt"))
+	@Get("stars")
+	@ApiOperation({ summary: "查询漫画收藏列表" })
+	@ApiBearerAuth()
+	async stars(@Request() req) {
+		return await this.userService.getStars(req.user);
 	}
 }
