@@ -57,5 +57,8 @@ export class DBUserType {
 }
 
 export class DBSettingType {
+	/**主题风格 */
 	themeDark: boolean;
+	/**选择的解析器列表 */
+	selectParsers: Array<string>;
 }

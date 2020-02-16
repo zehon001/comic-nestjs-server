@@ -256,11 +256,11 @@ export default {
 </script>
 
 <style lang="scss">
-#inspire {
-	// background: black;
-	// background-color: black;
-	// margin-top: 60px;
-}
+// #inspire {
+// background: black;
+// background-color: black;
+// margin-top: 60px;
+// }
 // html {
 // 	height: 100%;
 // 	width: 100%;
