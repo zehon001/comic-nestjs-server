@@ -53,7 +53,12 @@ export default class DBAdapter {
 		if (res.data.statusCode == 0) {
 			return true;
 		} else {
-			if (res.status == 401) res.data.message = "登录已过期";
+			if (res.status == 401) {
+				res.data.message = "登录已过期";
+				if (this.user || this.accessToken) {
+					this.logout();
+				}
+			}
 			this.error(res.data.message || res.status + " " + res.statusText);
 			return false;
 		}
