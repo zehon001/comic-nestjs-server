@@ -55,15 +55,15 @@ export default class M99770Parser extends BaseParser {
 			.next()
 			.next()
 			.next()
-			.next();
-		let matchUpdateAt = $lastUpdateAt
 			.children()
-			.next()
-			.text()
-			.match(/\d(.*?)$/);
-		ret.lastUpdateAt = matchUpdateAt ? matchUpdateAt[0] : "";
+			.next();
+		$lastUpdateAt.children().remove(); //删除a标签
+		let matchUpdateAt = $lastUpdateAt.text().match(/\d(.*?)$/);
+
+		if (matchUpdateAt) ret.lastUpdateAt = matchUpdateAt[0];
+
 		/**类型 */
-		ret.tag = "未指定";
+		// ret.tag = "未指定";
 
 		ret.cover = $(".cDefaultImg")
 			.children()

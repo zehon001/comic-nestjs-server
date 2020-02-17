@@ -87,6 +87,7 @@ export default class Search extends Vue {
 			this.stared = idx >= 0;
 		}
 		this.loading = false;
+		// console.log(this.data);
 	}
 	created() {
 		// console.log("页面创建");

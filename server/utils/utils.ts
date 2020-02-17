@@ -1,5 +1,5 @@
 // import fetch from "node-fetch";
-import Axios from "axios";
+import Axios, { AxiosError } from "axios";
 
 import CacheManager from "./CacheManager";
 import { Logger } from "@nestjs/common";
@@ -26,11 +26,9 @@ export default class Utils {
 			if (c) {
 				resolve(c);
 			} else {
-				Axios.get(url.url, {
-					method: "POST",
+				Axios.post(url.url, body, {
 					headers: headers,
-					timeout: 10000, //超时10秒
-					data: body
+					timeout: 10000 //超时10秒
 				})
 					.then(response => {
 						if (Math.floor(response.status / 100) != 2) {
@@ -38,6 +36,7 @@ export default class Utils {
 								code: response.status,
 								msg: response.statusText
 							});
+							return "";
 						} else {
 							// if (response[url.type]) return response[url.type]();
 							// else return response.data;
@@ -50,10 +49,14 @@ export default class Utils {
 							_this.cache.set("POST" + url.url + body, msg);
 							resolve(msg);
 						}
+						return msg;
 					})
-					.catch(error => {
+					.catch((error: AxiosError) => {
+						console.log(error.response);
 						Logger.error(error.toString());
+						console.log("出错");
 						resolve();
+						return error.response;
 					});
 			}
 		});

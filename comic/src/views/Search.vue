@@ -34,10 +34,10 @@
 
 					<v-card-subtitle class='caption pl-0 py-0'>
 						<!-- {{`类型：${item.tag}，来源：M99770`}} -->
-						{{"来源：99770漫画"}}
+						{{`来源：${item.parserName}`}}
 					</v-card-subtitle>
 					<v-card-subtitle class='caption pl-0 pt-0 pb-0'>
-						{{`更新：${item.lastUpdateAt}`}}
+						{{`更新：${item.lastUpdateAt||"暂无"}`}}
 					</v-card-subtitle>
 
 					<v-expand-transition>

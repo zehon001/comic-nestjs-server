@@ -28,7 +28,7 @@ export class Comic extends BaseModel {
 	tag: string;
 
 	@prop()
-	@ApiProperty({ description: "最后更新", example: "2020-01-23 01:44:42" })
+	@ApiProperty({ description: "最后更新", example: "" })
 	lastUpdateAt: string;
 
 	@prop()

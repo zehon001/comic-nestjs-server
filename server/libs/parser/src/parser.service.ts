@@ -7,6 +7,7 @@ import { Season } from "@lib/db/models/season.model";
 import { ParseComicRet, ParseSeasonRet, ParseComicSVCRet, ParseSeasonSVCRet } from "./parser.result";
 import { StatusException } from "filters/status.exception";
 import BaseParser from "./parses/base.parser";
+import BaiNianParser from "./parses/bainian.parser";
 
 @Injectable()
 export class ParserService {
@@ -33,6 +34,7 @@ export class ParserService {
 		this.parsers = [];
 
 		this.parsers.push(M99770Parser);
+		this.parsers.push(BaiNianParser);
 
 		this.parserNameTestCache = {};
 		this.parsers.map(p => {
@@ -81,11 +83,11 @@ export class ParserService {
 		// console.log(comic.seasons);//现在是虚拟字段
 
 		//还未超过最大缓存时间（因为漫画会更新，不能永久缓存解析结果）
-		if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() < 24 * 3600000) {
-			await comic.populate("seasons").execPopulate();
-			// console.log("读取漫画缓存");
-			return ret;
-		}
+		// if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() < 24 * 3600000) {
+		// 	await comic.populate("seasons").execPopulate();
+		// 	// console.log("读取漫画缓存");
+		// 	return ret;
+		// }
 
 		// console.log("重新解析漫画");
 		//否则重新解析
@@ -95,7 +97,7 @@ export class ParserService {
 		//解析器名称
 		comic.parserName = (parser.constructor as typeof BaseParser).getConfig().name;
 
-		const { seasons } = await parser.parseComic(comic.srcUrl);
+		const { tag, author, lastUpdateAt, seasons } = await parser.parseComic(comic.srcUrl);
 		// console.log(seasons);
 		try {
 			if (seasons.length > 0) {
@@ -107,6 +109,9 @@ export class ParserService {
 					>;
 					comic.seasons.push(md_season);
 				}
+				if (author) comic.author = author;
+				if (tag) comic.tag = tag;
+				if (lastUpdateAt) comic.lastUpdateAt = lastUpdateAt;
 				comic.lastParseAt = new Date();
 				await comic.save();
 				// console.log(comic);
@@ -125,7 +130,7 @@ export class ParserService {
 
 		const parser = this.getParserByKey(this.getHostName(url));
 		if (!parser) return ret.error("解析器不存在");
-		let comic: any = await parser.parseComic(url);
+		let comic: ParseComicRet = await parser.parseComic(url);
 
 		if (comic.err) {
 			ret.error();
@@ -148,8 +153,11 @@ export class ParserService {
 					const md_season = (await this.convertSeasonToModel(md_comic, seasons[i])) as DocumentType<Season>;
 					md_comic.seasons.push(md_season);
 				}
-				comic.lastParseAt = new Date();
-				await comic.save();
+				if (comic.author) md_comic.author = comic.author;
+				if (comic.tag) md_comic.tag = comic.tag;
+				if (comic.lastUpdateAt) md_comic.lastUpdateAt = comic.lastUpdateAt;
+				md_comic.lastParseAt = new Date();
+				await md_comic.save();
 				// await (comic as DocumentType<Comic>).save();
 			}
 			ret.comic = md_comic;
@@ -282,7 +290,7 @@ export class ParserService {
 					toupdate = true;
 				}
 			}
-			if (model.lastUpdateAt != lastUpdateAt) {
+			if (lastUpdateAt && model.lastUpdateAt != lastUpdateAt) {
 				model.lastUpdateAt = lastUpdateAt;
 				toupdate = true;
 			}
