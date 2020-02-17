@@ -16,6 +16,10 @@ export class Comic extends BaseModel {
 	srcUrl: string;
 
 	@prop()
+	@ApiProperty({ description: "解析器名称", example: "" })
+	parserName: string;
+
+	@prop()
 	@ApiProperty({ description: "作者", example: "http://www.baidu.com" })
 	author: string;
 

@@ -18,6 +18,7 @@ export class ParserService {
 		@InjectModel(Season) private readonly seaonModel: ModelType<Season>
 	) {
 		this.initParser();
+		// console.log();
 
 		// console.log(this.getHostName("https://99770.hhxxee.com/comic/15840"));
 	}
@@ -88,9 +89,11 @@ export class ParserService {
 
 		// console.log("重新解析漫画");
 		//否则重新解析
-
 		const parser = this.getParserByKey(this.getHostName(comic.srcUrl));
 		if (!parser) return ret.error("解析器不存在");
+
+		//解析器名称
+		comic.parserName = (parser.constructor as typeof BaseParser).getConfig().name;
 
 		const { seasons } = await parser.parseComic(comic.srcUrl);
 		// console.log(seasons);
@@ -122,7 +125,6 @@ export class ParserService {
 
 		const parser = this.getParserByKey(this.getHostName(url));
 		if (!parser) return ret.error("解析器不存在");
-
 		let comic: any = await parser.parseComic(url);
 
 		if (comic.err) {
@@ -135,6 +137,9 @@ export class ParserService {
 		comic.seasons = []; //清空集信息
 
 		const md_comic = await this.convertComicToModel(comic);
+		//解析器名称
+		md_comic.parserName = (parser.constructor as typeof BaseParser).getConfig().name;
+
 		try {
 			if (seasons.length > 0) {
 				md_comic.seasons = [];
@@ -235,14 +240,16 @@ export class ParserService {
 		if (useParse) parserNames = useParse.split(",");
 		else parserNames = this.getParserNames();
 
-		let parser: BaseParser, list: ParseComicRet[];
+		let parser: BaseParser, list: ParseComicRet[], comic: Comic;
 
 		for (let i = 0; i < parserNames.length; i++) {
 			parser = this.getParserByName(parserNames[i]);
 			if (parser) {
 				list = await parser.search(content);
-				for (let i = 0; i < list.length; i++) {
-					ret.push(await this.convertComicToModel(list[i]));
+				for (let j = 0; j < list.length; j++) {
+					comic = await this.convertComicToModel(list[j]);
+					comic.parserName = parserNames[i];
+					ret.push(comic);
 				}
 			}
 		}

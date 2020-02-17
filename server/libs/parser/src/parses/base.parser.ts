@@ -50,6 +50,4 @@ export default class BaseParser {
 	async search(content: string): Promise<ParseComicRet[]> {
 		return [];
 	}
-
-	mas() {}
 }
