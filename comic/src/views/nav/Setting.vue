@@ -111,14 +111,7 @@ export default class Setting extends Vue {
 	all_parser_indeterminate: boolean = false;
 	allParserCheck: boolean = false;
 	selectParsers: Array<string> = [];
-	parsers = [
-		"酷酷漫画",
-		"99770漫画",
-		"百年漫画",
-		"动漫之家1",
-		"动漫之家2",
-		"动漫之家3"
-	];
+	parsers: Array<string> = [];
 
 	settings: any = this.$tools.dbAdapter.getSettings();
 	get themeDarkName() {
@@ -127,6 +120,7 @@ export default class Setting extends Vue {
 
 	async fetch() {
 		this.parsers = await this.$tools.dbAdapter.getParserNames();
+		console.log(this.parsers);
 		this.selectParsers = this.settings.selectParsers || [];
 		//清除不在现有列表的选择
 		for (let i = this.selectParsers.length - 1; i >= 0; i--) {

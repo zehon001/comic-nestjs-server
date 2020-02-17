@@ -231,7 +231,12 @@ export default class DBAdapter {
 
 	/**获取解析器名称列表 */
 	public async getParserNames(): Promise<string[]> {
-		return ["酷酷漫画", "99770漫画", "百年漫画", "动漫之家1", "动漫之家2", "动漫之家3"];
+		const res = await this.http.get("/comic/parsernames");
+		if (this.isOK(res)) {
+			return res.data.data as string[];
+		} else return [];
+		//comic_api/comic/parsernames
+		// return ["酷酷漫画", "99770漫画", "百年漫画", "动漫之家"];
 	}
 	/**更新配置 */
 	public updateSetttings(settings: DBSettingType): DBSettingType {
