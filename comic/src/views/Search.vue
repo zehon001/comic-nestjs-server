@@ -68,12 +68,12 @@ export default class Search extends Vue {
 			this.$route.query.content,
 			selectParsers.reduce((t, n) => t + "," + n)
 		);
-		console.log(this.items);
+		// console.log(this.items);
 		this.loading = false;
 	}
 	mounted() {
 		this.fetch();
-		console.log(this.$route);
+		// console.log(this.$route);
 	}
 }
 </script>
