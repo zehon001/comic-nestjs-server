@@ -1,15 +1,21 @@
-import BaseParser from "./base.parser";
+import BaseParser, { ParserConfig } from "./base.parser";
 import * as cheerio from "cheerio";
 import Utils from "utils/utils";
 import { ParseComicRet, ParseSeasonRet } from "../parser.result";
-// global.tempEvalM99770 = {};
 
-//TODO 失败处理
 export default class M99770Parser extends BaseParser {
 	private servers: [];
 	constructor() {
 		super();
 		this.servers = [];
+	}
+
+	/**获取配置 */
+	public static getConfig(): ParserConfig {
+		let config = new ParserConfig();
+		config.name = "99770漫画";
+		config.keys.push("hhxxee.com");
+		return config;
 	}
 
 	/**解析漫画信息（包括集信息） */
@@ -102,6 +108,7 @@ export default class M99770Parser extends BaseParser {
 		return ret;
 	}
 
+	/**解析一集 */
 	async parseSeason(url): Promise<ParseSeasonRet> {
 		await this.getServers();
 		const res = await Utils.getUrl(url);

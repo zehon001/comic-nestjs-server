@@ -6,13 +6,56 @@ import M99770Parser from "./parses/m99770.parser";
 import { Season } from "@lib/db/models/season.model";
 import { ParseComicRet, ParseSeasonRet, ParseComicSVCRet, ParseSeasonSVCRet } from "./parser.result";
 import { StatusException } from "filters/status.exception";
+import BaseParser from "./parses/base.parser";
 
 @Injectable()
 export class ParserService {
+	private parserNameTestCache: any;
+	private parsers: Array<typeof BaseParser>;
+
 	constructor(
 		@InjectModel(Comic) private readonly comicModel: ModelType<Comic>,
 		@InjectModel(Season) private readonly seaonModel: ModelType<Season>
-	) {}
+	) {
+		this.initParser();
+
+		// console.log(this.getHostName("https://99770.hhxxee.com/comic/15840"));
+	}
+
+	getHostName(url: string): string {
+		const res = url.match(/http[s]?:\/\/(.*?)\//);
+		if (res) return res[1];
+		return "";
+	}
+	/**初始化解析器 */
+	initParser() {
+		this.parsers = [];
+
+		this.parsers.push(M99770Parser);
+
+		this.parserNameTestCache = {};
+		this.parsers.map(p => {
+			this.parserNameTestCache[p.getConfig().name] = p;
+		});
+	}
+
+	/**根据key获取解析器 */
+	getParserByKey(key): BaseParser | null {
+		for (let i = 0; i < this.parsers.length; i++) {
+			if (this.parsers[i].getConfig().testKey(key)) return new this.parsers[i]();
+		}
+		return null;
+	}
+
+	/**根据name获取解析器 */
+	getParserByName(name): BaseParser | null {
+		return this.parserNameTestCache[name] && new this.parserNameTestCache[name]();
+	}
+
+	/**获取所有解析器名称 */
+	getParserNames() {
+		return this.parsers.map(p => p.getConfig().name);
+	}
 
 	/**解析漫画页 返回漫画地址等信息 TODO: 添加更新判断,已经解析过的,还没到漫画章节更新时不需要再解析 */
 	async parseComic(id): Promise<ParseComicSVCRet> {
@@ -45,7 +88,11 @@ export class ParserService {
 
 		// console.log("重新解析漫画");
 		//否则重新解析
-		const { seasons } = await new M99770Parser().parseComic(comic.srcUrl);
+
+		const parser = this.getParserByKey(this.getHostName(comic.srcUrl));
+		if (!parser) return ret.error("解析器不存在");
+
+		const { seasons } = await parser.parseComic(comic.srcUrl);
 		// console.log(seasons);
 		try {
 			if (seasons.length > 0) {
@@ -71,8 +118,12 @@ export class ParserService {
 	/**根据url解析漫画页 */
 	async parseComicByUrl(url: string): Promise<ParseComicSVCRet> {
 		//网址类型（数据库可能没有数据模型）
-		let comic: any = await new M99770Parser().parseComic(url);
 		let ret = new ParseComicSVCRet();
+
+		const parser = this.getParserByKey(this.getHostName(url));
+		if (!parser) return ret.error("解析器不存在");
+
+		let comic: any = await parser.parseComic(url);
 
 		if (comic.err) {
 			ret.error();
@@ -123,7 +174,9 @@ export class ParserService {
 			if (!model) return ret.error("当前集不存在");
 			if (model.images.length <= 0) {
 				//还没解析过
-				const { err, images } = await new M99770Parser().parseSeason(model.srcUrl);
+				const parser = this.getParserByKey(this.getHostName(model.srcUrl));
+				if (!parser) return ret.error("解析器不存在");
+				const { err, images } = await parser.parseSeason(model.srcUrl);
 				if (err) return ret.error("解析集失败");
 				if (images.length > 0) {
 					//保存地址
@@ -151,7 +204,9 @@ export class ParserService {
 			return ret;
 		}
 
-		const { err, images, comicUrl } = await new M99770Parser().parseSeason(url);
+		const parser = this.getParserByKey(this.getHostName(url));
+		if (!parser) return ret.error("解析器不存在");
+		const { err, images, comicUrl } = await parser.parseSeason(url);
 		if (err) return ret.error("解析集失败");
 
 		//不存在当前集 解析
@@ -174,11 +229,24 @@ export class ParserService {
 
 	/**搜索漫画 */
 	async search(content: string, useParse?: string): Promise<Comic[]> {
-		const list = await new M99770Parser().search(content);
 		const ret: Comic[] = [];
-		for (let i = 0; i < list.length; i++) {
-			ret.push(await this.convertComicToModel(list[i]));
+
+		let parserNames = [];
+		if (useParse) parserNames = useParse.split(",");
+		else parserNames = this.getParserNames();
+
+		let parser: BaseParser, list: ParseComicRet[];
+
+		for (let i = 0; i < parserNames.length; i++) {
+			parser = this.getParserByName(parserNames[i]);
+			if (parser) {
+				list = await parser.search(content);
+				for (let i = 0; i < list.length; i++) {
+					ret.push(await this.convertComicToModel(list[i]));
+				}
+			}
 		}
+
 		return ret;
 	}
 

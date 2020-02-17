@@ -14,6 +14,15 @@ export class ComicController {
 	) {}
 
 	@UseGuards(JwtAuthBearerGuard)
+	@Get("parsernames")
+	@ApiOperation({ summary: "获取解析器名称" })
+	@ApiBearerAuth()
+	async parserNames() {
+		const ret = await this.comicService.getParserNames();
+		return ret;
+	}
+
+	@UseGuards(JwtAuthBearerGuard)
 	@Post("search")
 	@ApiOperation({ summary: "搜索漫画" })
 	@ApiBearerAuth()

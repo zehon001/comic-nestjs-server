@@ -16,6 +16,10 @@ export class ComicService {
 		this.logger = new MyLogger("ComicService");
 	}
 
+	async getParserNames(): Promise<string[]> {
+		return this.parserService.getParserNames();
+	}
+
 	async search(searchDto: ComicSearchDto) {
 		return await this.parserService.search(searchDto.content, searchDto.useParser);
 	}
