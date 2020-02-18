@@ -13,6 +13,8 @@ async function bootstrap() {
 	app.useGlobalFilters(new StatusFilter());
 	app.useGlobalInterceptors(new StatusInterceptor());
 	app.enableCors();
+	app.setGlobalPrefix(AppDF.GLOBAL_PREFIX);
+
 	app.useStaticAssets("uploads", {
 		prefix: "/uploads"
 	});

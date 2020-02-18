@@ -1,9 +1,10 @@
 export default class AppDF {
 	/**管理后台端口 */
-	static readonly ADMIN_PORT = 3008;
+	static readonly ADMIN_PORT = 9030;
 	/**解析任务队列名称 */
 	static readonly PARSE_QUEUE = "parseQueue";
-
+	/**全局前缀 */
+	static readonly GLOBAL_PREFIX = "comic_admin_api";
 	/**管理后台界面配置 */
 	static WebOption = {
 		index: {

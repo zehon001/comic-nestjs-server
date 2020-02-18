@@ -16,7 +16,7 @@ export class AppController {
 	@UseInterceptors(FileInterceptor("file"))
 	async upload(@UploadedFile("file") file) {
 		return {
-			url: `http://localhost:3008/uploads/${file.filename}`
+			url: `http://localhost:${AppDF.ADMIN_PORT}/uploads/${file.filename}`
 		};
 	}
 
