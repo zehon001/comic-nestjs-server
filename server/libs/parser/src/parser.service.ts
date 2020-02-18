@@ -83,11 +83,11 @@ export class ParserService {
 		// console.log(comic.seasons);//现在是虚拟字段
 
 		//还未超过最大缓存时间（因为漫画会更新，不能永久缓存解析结果）
-		// if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() < 24 * 3600000) {
-		// 	await comic.populate("seasons").execPopulate();
-		// 	// console.log("读取漫画缓存");
-		// 	return ret;
-		// }
+		if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() < 24 * 3600000) {
+			await comic.populate("seasons").execPopulate();
+			// console.log("读取漫画缓存");
+			return ret;
+		}
 
 		// console.log("重新解析漫画");
 		//否则重新解析
