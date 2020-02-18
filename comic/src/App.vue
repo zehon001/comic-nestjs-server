@@ -204,8 +204,9 @@ export default {
 	created() {
 		this.$tools.toast = this.toast.bind(this);
 
-		this.$vuetify.theme.dark = !!this.$tools.dbAdapter.getSettings()
-			.themeDark;
+		let themeDark = this.$tools.dbAdapter.getSettings().themeDark;
+		if (themeDark === undefined) themeDark = true;
+		this.$vuetify.theme.dark = !!themeDark;
 	},
 
 	computed: {

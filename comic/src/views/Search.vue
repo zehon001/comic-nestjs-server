@@ -66,7 +66,9 @@ export default class Search extends Vue {
 		const selectParsers = this.adapter.getSettings().selectParsers || [];
 		this.items = await this.adapter.search(
 			this.$route.query.content,
-			selectParsers.reduce((t, n) => t + "," + n)
+			selectParsers.length > 0
+				? selectParsers.reduce((t, n) => t + "," + n)
+				: ""
 		);
 		// console.log(this.items);
 		this.loading = false;
