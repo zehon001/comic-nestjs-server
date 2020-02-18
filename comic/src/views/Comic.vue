@@ -21,6 +21,7 @@
 								<v-card-subtitle class="px-0 py-1">{{"类型："+data.tag}}</v-card-subtitle>
 								<v-card-subtitle class="px-0 py-1">{{"作者："+data.author}}</v-card-subtitle>
 								<v-card-subtitle class="px-0 py-1">{{"最后更新："+data.lastUpdateAt}}</v-card-subtitle>
+								<v-card-subtitle class="px-0 py-1">{{"来源："+data.parserName}}</v-card-subtitle>
 								<v-card-subtitle class="px-0 py-1">{{"暂无介绍"}}</v-card-subtitle>
 								<v-btn
 									class="mt-6"
