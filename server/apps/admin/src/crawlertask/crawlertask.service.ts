@@ -5,6 +5,8 @@ import { ParserService } from "@app/parser";
 import AppDF from "../app.define";
 import MyLogger from "utils/MyLogger";
 import { Job } from "bull";
+import { Season } from "@lib/db/models/season.model";
+import { DocumentType } from "@typegoose/typegoose";
 
 @Injectable()
 export class CrawlertaskService {
@@ -44,7 +46,7 @@ export class CrawlertaskService {
 		const step = 95 / seasons.length;
 		//跳过已完成任务
 		for (let i = seasons.length - 1; i >= 0; i--) {
-			let s_id = seasons[i].toString();
+			let s_id = (seasons[i] as DocumentType<Season>).id;
 			if (job.data.status[s_id] == "success") {
 				seasons.splice(i, 1);
 				progress += step;
@@ -55,7 +57,7 @@ export class CrawlertaskService {
 		for (let i = 0; i < seasons.length; i++) {
 			console.log(`正在解析第${i + 1}集`);
 			// console.log(seasons[i]);
-			let s_id = seasons[i].toString();
+			let s_id = (seasons[i] as DocumentType<Season>).id;
 			let { err, season } = await this.parserService.parseSeasonById(s_id);
 			if (err) {
 				console.log(`解析第${i + 1}集失败`);

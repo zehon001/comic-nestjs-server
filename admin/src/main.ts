@@ -8,7 +8,8 @@ import "./plugins/avue";
 Vue.config.productionTip = false;
 
 const $http = axios.create({
-	baseURL: "http://www.leronggame.cn/comic_admin_api"
+	// baseURL: "http://www.leronggame.cn/comic_admin_api"
+	baseURL: "http://localhost:9030/comic_admin_api"
 });
 
 Vue.prototype.$http = $http;
