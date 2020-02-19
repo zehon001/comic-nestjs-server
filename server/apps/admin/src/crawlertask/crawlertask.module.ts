@@ -15,7 +15,7 @@ import AppDF from "../app.define";
 				port: 6379
 			},
 			defaultJobOptions: {
-				timeout: 1800000
+				timeout: 3153600000000 //100年
 			}
 		}),
 		ParserModule
