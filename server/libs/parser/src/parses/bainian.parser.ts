@@ -4,10 +4,8 @@ import Utils from "utils/utils";
 import { ParseComicRet, ParseSeasonRet } from "../parser.result";
 
 export default class BaiNianParser extends BaseParser {
-	private servers: [];
 	constructor() {
 		super();
-		this.servers = [];
 	}
 
 	/**获取配置 */
@@ -22,12 +20,16 @@ export default class BaiNianParser extends BaseParser {
 	async parseComic(url): Promise<ParseComicRet> {
 		const res = await Utils.getUrl(url);
 		let ret = new ParseComicRet();
+		ret.srcUrl = url;
 
 		if (typeof res !== "string") {
 			ret.error();
 			return ret;
 		}
 		let $ = cheerio.load(res, { decodeEntities: false });
+		ret.cover = $(".bpic.l")
+			.children()
+			.attr("src");
 
 		let $info = $(".info.l ul li");
 		$info.each((idx, ele) => {
@@ -62,6 +64,7 @@ export default class BaiNianParser extends BaseParser {
 	async parseSeason(url): Promise<ParseSeasonRet> {
 		const res = await Utils.getUrl(url);
 		let ret = new ParseSeasonRet();
+		ret.srcUrl = url;
 		if (typeof res === "string") {
 			try {
 				let $ = cheerio.load(res);

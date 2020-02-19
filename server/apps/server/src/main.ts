@@ -6,6 +6,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { StatusInterceptor } from "filters/status.interceptor";
 import { StatusFilter } from "filters/status.filter";
 import AppDF from "./app.define";
+// import Utils from "utils/utils";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -31,5 +32,14 @@ async function bootstrap() {
 
 	await app.listen(AppDF.SERVER_PORT);
 	console.log("http://localhost:" + AppDF.SERVER_PORT);
+	// require("./test.js");
+	// delete require.cache[require.resolve("./test.js")];
+	// require("./test.js");
+	// delete require.cache[require.resolve("./test.js")];
+	// require("./test.js");
+	// delete require.cache[require.resolve("./test.js")];
+	// console.log(eval(require("./test.js")));
+	// console.log(require.cache);
+	// console.log(require.cache[require.resolve('./test.js')]);
 }
 bootstrap();

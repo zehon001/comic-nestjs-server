@@ -8,6 +8,7 @@ import { ParseComicRet, ParseSeasonRet, ParseComicSVCRet, ParseSeasonSVCRet } fr
 import { StatusException } from "filters/status.exception";
 import BaseParser from "./parses/base.parser";
 import BaiNianParser from "./parses/bainian.parser";
+import M90MHParser from "./parses/m90mh.parser";
 
 @Injectable()
 export class ParserService {
@@ -33,8 +34,9 @@ export class ParserService {
 	initParser() {
 		this.parsers = [];
 
-		this.parsers.push(M99770Parser);
 		this.parsers.push(BaiNianParser);
+		this.parsers.push(M99770Parser);
+		this.parsers.push(M90MHParser);
 
 		this.parserNameTestCache = {};
 		this.parsers.map(p => {
@@ -93,14 +95,15 @@ export class ParserService {
 		//否则重新解析
 		const parser = this.getParserByKey(this.getHostName(comic.srcUrl));
 		if (!parser) return ret.error("解析器不存在");
-
 		//解析器名称
 		comic.parserName = (parser.constructor as typeof BaseParser).getConfig().name;
 
-		const { tag, author, lastUpdateAt, seasons } = await parser.parseComic(comic.srcUrl);
+		const { err, msg, tag, author, lastUpdateAt, seasons } = await parser.parseComic(comic.srcUrl);
+		ret.err = err;
+		ret.msg = msg;
 		// console.log(seasons);
 		try {
-			if (seasons.length > 0) {
+			if (!ret.err && seasons.length > 0) {
 				comic.seasons = [];
 				for (let i = 0; i < seasons.length; i++) {
 					//数据模型指定

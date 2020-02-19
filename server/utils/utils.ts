@@ -74,6 +74,7 @@ export default class Utils {
 			else {
 				Axios.get(url.url, {
 					method: "GET",
+
 					headers: headers,
 					timeout: 10000 //10秒超时
 				})
@@ -140,5 +141,12 @@ export default class Utils {
 		if (typeof traditional != "string") traditional = "";
 		return transation.t2s(traditional);
 		// return traditional;
+	}
+
+	/**延时 */
+	static async delay(ms) {
+		return new Promise(function(resolve, reject) {
+			setTimeout(resolve, ms);
+		});
 	}
 }

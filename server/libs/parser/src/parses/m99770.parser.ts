@@ -23,7 +23,7 @@ export default class M99770Parser extends BaseParser {
 		const res = await Utils.getUrl(url);
 
 		let ret = new ParseComicRet();
-
+		ret.srcUrl = url;
 		if (typeof res !== "string") {
 			ret.error();
 			return ret;
@@ -114,6 +114,8 @@ export default class M99770Parser extends BaseParser {
 		const res = await Utils.getUrl(url);
 		// let ret = { images: [], comicUrl: "", err: false };
 		let ret = new ParseSeasonRet();
+		ret.srcUrl = url;
+
 		if (typeof res === "string") {
 			try {
 				let $ = cheerio.load(res);
