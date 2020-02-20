@@ -1,6 +1,8 @@
 # compiled output
 /dist
 /node_modules
+app.define.ts
+apps/admin/src/app.define.ts
 
 # Logs
 logs

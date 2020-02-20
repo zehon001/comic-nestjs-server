@@ -4,12 +4,12 @@ import App from "./App.vue";
 import router from "./router";
 import "./plugins/element";
 import "./plugins/avue";
+import AppDF from "./app.define";
 
 Vue.config.productionTip = false;
 
 const $http = axios.create({
-	baseURL: "http://www.leronggame.cn/comic_admin_api"
-	// baseURL: "http://localhost:9030/comic_admin_api"
+	baseURL: AppDF.SERVER_URL
 });
 
 Vue.prototype.$http = $http;

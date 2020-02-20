@@ -5,11 +5,12 @@ import vuetify from "./plugins/vuetify";
 import router from "./router";
 import components from "./components/index";
 import Tools from "./tools/tools";
+import AppDF from "./app.define";
 
 Vue.config.productionTip = false;
 
 const $http = axios.create({
-	baseURL: "http://www.leronggame.cn/comic_api"
+	baseURL: AppDF.SERVER_URL
 });
 
 Vue.prototype.$http = $http;
