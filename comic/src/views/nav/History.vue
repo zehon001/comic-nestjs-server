@@ -32,7 +32,7 @@
 					</div>
 
 					<v-card-subtitle class='caption pl-0 py-0'>
-						{{$tools.beautySub(`上次观看：${item.comic.name}`,30)}}
+						{{$tools.beautySub(`上次观看：${item.name}`,30)}}
 
 					</v-card-subtitle>
 					<!-- <v-card-subtitle class='caption pl-0 pt-0 pb-0'>
