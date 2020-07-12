@@ -74,16 +74,25 @@ export default class BaiNianParser extends BaseParser {
 						.children("a")
 						.attr("href");
 				// console.log("comicUrl:" + ret.comicUrl);
-				var m = res.match(/var z_yurl(.*?);/)[0];
-				var z_yurl = Utils.evalVariable(m, "z_yurl");
-				m = res.match(/var z_img(.*?);/)[0];
-				var z_img = Utils.evalVariable(m, "z_img");
+				var z_yurl,z_img;
+
+				try{
+					var m = res.match(/var z_yurl(.*?);/)[0];
+					z_yurl = Utils.evalVariable(m, "z_yurl");
+				}catch(err){
+					z_yurl = await this.getServer()
+				}
+				
+
+				var m = res.match(/var z_img(.*?);/)[0];
+				z_img = Utils.evalVariable(m, "z_img");
 
 				let imgs = JSON.parse(z_img);
 				imgs.map((img, idx) => {
 					ret.images.push(z_yurl + img);
 				});
 			} catch (err) {
+				console.log(err)
 				console.log(`百年漫画解析页地址的通道失败 url=${url}`);
 				ret.error();
 			}
@@ -95,8 +104,8 @@ export default class BaiNianParser extends BaseParser {
 
 	/**搜索漫画 */
 	async search(content: string): Promise<ParseComicRet[]> {
-		let url = "https://www.bnmanhua.com/index.php?m=vod-search";
-		let body = "wd=" + content;
+		let url = "https://www.bnmanhua.com/search.html";
+		let body = "keyword=" + content;
 
 		const res = await Utils.postUrl(
 			{
@@ -126,5 +135,25 @@ export default class BaiNianParser extends BaseParser {
 			ret.push(result);
 		});
 		return ret;
+	}
+
+	async getServer(): Promise<string>{
+		const res = await Utils.getUrl(
+			{
+				url: "https://www.bnmanhua.com/static/manhua/comic.js",
+				headers: {
+					accept: "*/*"
+				}
+			}
+		);
+		if (typeof res !== "string") return "";
+
+		try{
+			 var m = res.match(/var z_yurl(.*?);/)[0];
+			 return Utils.evalVariable(m, "z_yurl");
+
+		}catch(err){
+			return ""
+		}
 	}
 }
