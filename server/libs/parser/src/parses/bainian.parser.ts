@@ -52,11 +52,12 @@ export default class BaiNianParser extends BaseParser {
 			let $ele = $(ele);
 			season.name = $ele.text();
 			season.srcUrl = "https://www.bnmanhua.com" + $ele.attr("href");
-			season.sidx = idx;
+			season.sidx = len - idx;
 			season.type = "normal";
 			ret.seasons.push(season);
 		});
-		// ret.seasons.sort(function(a,b){return a.season-b.season});
+		// console.log(ret.seasons)
+		//ret.seasons.sort(function(a,b){return b.sidx-a.sidx});
 		return ret;
 	}
 

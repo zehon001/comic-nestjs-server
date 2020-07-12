@@ -85,7 +85,7 @@ export class ParserService {
 		// console.log(comic.seasons);//现在是虚拟字段
 
 		//还未超过最大缓存时间（因为漫画会更新，不能永久缓存解析结果）
-		if (comic.lastParseAt && Date.now() - comic.lastParseAt.getTime() < 24 * 3600000) {
+		if (comic.lastParseAt && (Date.now() - comic.lastParseAt.getTime()) < (12*3600000)) {
 			await comic.populate("seasons").execPopulate();
 			// console.log("读取漫画缓存");
 			return ret;
@@ -106,7 +106,7 @@ export class ParserService {
 			if (!ret.err && seasons.length > 0) {
 				comic.seasons = [];
 				for (let i = 0; i < seasons.length; i++) {
-					//数据模型指定
+					//数据模型指定（不强制刷新数据库）
 					const md_season = (await this.convertSeasonToModel(comic, seasons[i] as any)) as DocumentType<
 						Season
 					>;
@@ -152,7 +152,7 @@ export class ParserService {
 			if (seasons.length > 0) {
 				md_comic.seasons = [];
 				for (let i = 0; i < seasons.length; i++) {
-					//数据模型指定
+					//数据模型指定（不强制刷新数据库）
 					const md_season = (await this.convertSeasonToModel(md_comic, seasons[i])) as DocumentType<Season>;
 					md_comic.seasons.push(md_season);
 				}
