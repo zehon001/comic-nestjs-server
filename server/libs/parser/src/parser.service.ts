@@ -35,7 +35,7 @@ export class ParserService {
 		this.parsers = [];
 
 		this.parsers.push(BaiNianParser);
-		this.parsers.push(M99770Parser);
+		//this.parsers.push(M99770Parser);
 		this.parsers.push(M90MHParser);
 
 		this.parserNameTestCache = {};
