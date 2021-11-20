@@ -132,9 +132,8 @@ export default class M90MHParser extends BaseParser {
 						.next()
 						.html()
 				);
-				let imgurl = $introduct
-					.next()
-					.next()
+				let $img = $("#chapter-image");
+				let imgurl = $img
 					.children()
 					.children()
 					.attr("src");
@@ -162,9 +161,7 @@ export default class M90MHParser extends BaseParser {
 		if (typeof res === "string") {
 			try {
 				let $ = cheerio.load(res, { decodeEntities: false });
-				imgurl = $(".Introduct_Sub")
-					.next()
-					.next()
+				imgurl = $("#chapter-image")
 					.children()
 					.children()
 					.attr("src");

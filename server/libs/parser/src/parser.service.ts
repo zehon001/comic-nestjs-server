@@ -188,13 +188,15 @@ export class ParserService {
 		try {
 			const model = await this.seaonModel.findById(String(id));
 			if (!model) return ret.error("当前集不存在");
-			if (model.images.length <= 0) {
+			
+			if (model.images.length <= 0 || !model.images[0]) {
 				//还没解析过
 				const parser = this.getParserByKey(this.getHostName(model.srcUrl));
 				if (!parser) return ret.error("解析器不存在");
 				const { err, images } = await parser.parseSeason(model.srcUrl);
 				if (err) return ret.error("解析集失败");
 				if (images.length > 0) {
+					model.images = [];
 					//保存地址
 					images.map(img => {
 						return model.images.push(img);
