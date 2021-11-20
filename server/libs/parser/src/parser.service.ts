@@ -9,6 +9,7 @@ import { StatusException } from "filters/status.exception";
 import BaseParser from "./parses/base.parser";
 import BaiNianParser from "./parses/bainian.parser";
 import M90MHParser from "./parses/m90mh.parser";
+import YkmhParser from "./parses/ykmh.parser";
 
 @Injectable()
 export class ParserService {
@@ -37,6 +38,7 @@ export class ParserService {
 		this.parsers.push(BaiNianParser);
 		//this.parsers.push(M99770Parser);
 		this.parsers.push(M90MHParser);
+		this.parsers.push(YkmhParser);
 
 		this.parserNameTestCache = {};
 		this.parsers.map(p => {
@@ -153,7 +155,7 @@ export class ParserService {
 				md_comic.seasons = [];
 				for (let i = 0; i < seasons.length; i++) {
 					//数据模型指定（不强制刷新数据库）
-					const md_season = (await this.convertSeasonToModel(md_comic, seasons[i])) as DocumentType<Season>;
+					const md_season = (await this.convertSeasonToModel(md_comic, seasons[i],true)) as DocumentType<Season>;
 					md_comic.seasons.push(md_season);
 				}
 				if (comic.author) md_comic.author = comic.author;
@@ -287,7 +289,7 @@ export class ParserService {
 		if (comic instanceof ParseComicRet) {
 			const lastUpdateAt = comic.lastUpdateAt;
 			let model = update
-				? await this.comicModel.findOneAndUpdate({ srcUrl: comic.srcUrl }, comic)
+				? await this.comicModel.updateOne({ srcUrl: comic.srcUrl }, comic)
 				: await this.comicModel.findOne({ srcUrl: comic.srcUrl });
 
 			if (!model) {
