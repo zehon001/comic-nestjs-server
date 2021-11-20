@@ -74,9 +74,8 @@ export default class Utils {
 			else {
 				Axios.get(url.url, {
 					method: "GET",
-
 					headers: headers,
-					timeout: 10000 //10秒超时
+					timeout: 300000 //10秒超时
 				})
 					.then(response => {
 						if (Math.floor(response.status / 100) != 2) {
