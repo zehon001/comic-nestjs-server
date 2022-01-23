@@ -56,6 +56,7 @@
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";
 import { DBSeasonType } from "../tools/db.adapter.types";
+import {FileSaverUtil} from "../../filesaver";
 
 @Component({})
 export default class Search extends Vue {
@@ -71,6 +72,8 @@ export default class Search extends Vue {
 		this.data = await this.adapter.getSeason(
 			this.$route.query.id as string
 		);
+		console.log(this.data.images);
+		FileSaverUtil.filesToRar(this.data.images,"test.zip")
 		this.loading = false;
 	}
 	mounted() {
@@ -84,6 +87,8 @@ export default class Search extends Vue {
 			query: { id: id }
 		});
 	}
+
+	
 }
 </script>
 
